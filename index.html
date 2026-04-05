@@ -1,0 +1,2394 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maawa Admin — Panneau de contrôle</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --b50:#e8f6ff;--b100:#cceaff;--b200:#99d5ff;--b300:#5cbdff;
+  --b400:#1fa8f5;--b500:#0090d9;--b600:#0072b0;--b700:#005585;--b800:#003d5e;
+  --gn:#10b981;--rd:#ef4444;--go:#f59e0b;--or:#f97316;--pu:#8b5cf6;
+  --gl:#d1fae5;--rl:#fee2e2;--gol:#fef3c7;--ol:#ffedd5;--pl:#ede9fe;
+  --bg:#f0f4f8;--surface:#fff;--surface2:#f7fafc;--surface3:#eef2f7;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.05);
+  --shadow-lg:0 10px 15px rgba(0,0,0,.08),0 4px 6px rgba(0,0,0,.04);
+  --sb-w:230px;--topbar-h:56px;--r:10px;--rs:8px;
+}
+body.dark{
+  --bg:#0d1117;--surface:#161b22;--surface2:#1c2128;--surface3:#21262d;
+  --border:#21262d;--border2:#30363d;--text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+  --shadow:0 1px 3px rgba(0,0,0,.4);--shadow-md:0 4px 6px rgba(0,0,0,.4);--shadow-lg:0 10px 15px rgba(0,0,0,.5);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;transition:background .2s,color .2s}
+button{cursor:pointer;border:none;background:none;font-family:inherit}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes countUp{from{transform:translateY(6px);opacity:0}to{transform:translateY(0);opacity:1}}
+.au{animation:fadeUp .3s ease both}
+.au1{animation:fadeUp .3s .05s ease both}
+.au2{animation:fadeUp .3s .1s ease both}
+.au3{animation:fadeUp .3s .15s ease both}
+.au4{animation:fadeUp .3s .2s ease both}
+.au5{animation:fadeUp .3s .25s ease both}
+.page{display:none}.page.on{display:block;animation:fadeUp .25s ease}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sb-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;scrollbar-width:none;transition:width .3s,background .2s,border-color .2s}
+.sidebar::-webkit-scrollbar{display:none}
+.sidebar.collapsed{width:60px}
+.sb-logo{display:flex;align-items:center;gap:9px;padding:16px 14px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-logo-box{width:32px;height:32px;border-radius:9px;background:#0d1c28;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-logo-txt{font-family:'Sora',sans-serif;font-weight:900;font-size:1rem;color:var(--b500);letter-spacing:-.5px;white-space:nowrap;overflow:hidden;transition:opacity .2s}
+.sb-logo-badge{font-size:.6rem;font-weight:700;background:var(--rd);color:#fff;padding:1px 5px;border-radius:50px;white-space:nowrap}
+.sidebar.collapsed .sb-logo-txt,.sidebar.collapsed .sb-logo-badge{opacity:0;width:0;overflow:hidden}
+.sb-section{font-size:.58rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding:12px 14px 4px;white-space:nowrap;overflow:hidden;transition:opacity .2s}
+.sidebar.collapsed .sb-section{opacity:0}
+.sb-nav{flex:1;padding:6px 8px;display:flex;flex-direction:column;gap:1px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--rs);font-size:.83rem;font-weight:500;color:var(--text2);transition:all .18s;cursor:pointer;position:relative;white-space:nowrap;overflow:hidden}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.on{background:var(--b500);color:#fff;font-weight:600}
+body.dark .nav-item.on{background:var(--b600)}
+.nav-item svg{flex-shrink:0;width:16px;height:16px;opacity:.75}
+.nav-item.on svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--rd);color:#fff;font-size:.58rem;font-weight:800;padding:1px 5px;border-radius:50px;min-width:16px;text-align:center;flex-shrink:0}
+.nav-item.on .nav-badge{background:rgba(255,255,255,.3)}
+.sidebar.collapsed .nav-item span,.sidebar.collapsed .nav-badge{opacity:0;width:0;overflow:hidden}
+.sidebar.collapsed .nav-item{justify-content:center;padding:10px}
+.sidebar.collapsed .nav-item svg{margin:0}
+.sb-bottom{padding:10px 8px;border-top:1px solid var(--border);flex-shrink:0}
+.sb-user{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--rs);cursor:pointer;transition:background .18s}
+.sb-user:hover{background:var(--surface2)}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--b400),var(--b700));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.68rem;color:#fff;flex-shrink:0;font-family:'Sora',sans-serif}
+.sb-uname{font-weight:600;font-size:.8rem;color:var(--text);white-space:nowrap;overflow:hidden}
+.sb-urole{font-size:.67rem;color:var(--text3)}
+.sidebar.collapsed .sb-uname,.sidebar.collapsed .sb-urole{display:none}
+
+/* ── MAIN ── */
+.main-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 20px;flex-shrink:0;box-shadow:var(--shadow);transition:background .2s,border-color .2s}
+.tb-toggle{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .18s;flex-shrink:0}
+.tb-toggle:hover{background:var(--surface2);color:var(--text)}
+.tb-title{font-family:'Sora',sans-serif;font-weight:700;font-size:.95rem;color:var(--text);flex:1}
+.tb-search{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:0 13px;height:33px;transition:all .2s;max-width:280px;width:100%}
+.tb-search:focus-within{border-color:var(--b400);box-shadow:0 0 0 3px rgba(0,144,217,.1);background:var(--surface)}
+.tb-search input{border:none;outline:none;background:transparent;font-size:.81rem;color:var(--text);flex:1}
+.tb-search input::placeholder{color:var(--text3)}
+.tb-right{display:flex;align-items:center;gap:6px;margin-left:auto}
+.icon-btn{width:33px;height:33px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text2);cursor:pointer;transition:all .2s;position:relative}
+.icon-btn:hover{background:var(--b50);color:var(--b500);border-color:var(--b300)}
+body.dark .icon-btn:hover{background:rgba(0,144,217,.15)}
+.notif-dot{position:absolute;top:4px;right:4px;width:7px;height:7px;border-radius:50%;background:var(--rd);border:1.5px solid var(--surface)}
+.tb-dm{width:33px;height:33px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:all .2s}
+.tb-dm:hover{background:var(--b50);border-color:var(--b300)}
+body.dark .tb-dm:hover{background:rgba(0,144,217,.15)}
+.content{flex:1;overflow-y:auto;padding:20px;scrollbar-width:thin}
+
+/* ── COMPONENTS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.kpi-grid{grid-template-columns:1fr}}
+.kpi-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px;transition:box-shadow .2s,transform .2s}
+.kpi-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.kpi-top{display:flex;align-items:center;justify-content:space-between}
+.kpi-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.kpi-val{font-family:'Sora',sans-serif;font-weight:800;font-size:1.55rem;color:var(--text);line-height:1;animation:countUp .4s ease}
+.kpi-label{font-size:.77rem;color:var(--text3)}
+.kpi-trend{display:inline-flex;align-items:center;gap:3px;font-size:.72rem;font-weight:600;padding:2px 7px;border-radius:50px}
+.kpi-trend.up{background:var(--gl);color:var(--gn)}
+.kpi-trend.down{background:var(--rl);color:var(--rd)}
+.kpi-trend.neutral{background:var(--surface2);color:var(--text3)}
+body.dark .kpi-trend.up{background:rgba(16,185,129,.15);color:#4ade80}
+body.dark .kpi-trend.down{background:rgba(239,68,68,.15);color:#f87171}
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.card-title{font-family:'Sora',sans-serif;font-weight:700;font-size:.9rem;color:var(--text);display:flex;align-items:center;gap:7px}
+.card-body{padding:16px 18px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}}
+.grid-3{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+@media(max-width:1000px){.grid-3{grid-template-columns:1fr}}
+
+/* Tables */
+.data-table{width:100%;border-collapse:collapse;font-size:.81rem}
+.data-table th{font-weight:600;color:var(--text3);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;padding:10px 14px;text-align:left;border-bottom:1.5px solid var(--border);background:var(--surface2);white-space:nowrap}
+.data-table td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:var(--surface2)}
+.data-table td.name{font-weight:600;color:var(--text)}
+.avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.62rem;color:#fff;font-family:'Sora',sans-serif;flex-shrink:0}
+
+/* Status badges */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:50px;font-size:.69rem;font-weight:700;white-space:nowrap}
+.badge-green{background:var(--gl);color:var(--gn)}
+.badge-red{background:var(--rl);color:var(--rd)}
+.badge-orange{background:var(--ol);color:var(--or)}
+.badge-blue{background:var(--b100);color:var(--b600)}
+.badge-purple{background:var(--pl);color:var(--pu)}
+.badge-gray{background:var(--surface2);color:var(--text3)}
+body.dark .badge-green{background:rgba(16,185,129,.15);color:#4ade80}
+body.dark .badge-red{background:rgba(239,68,68,.15);color:#f87171}
+body.dark .badge-orange{background:rgba(249,115,22,.15);color:#fb923c}
+body.dark .badge-blue{background:rgba(0,144,217,.15);color:var(--b300)}
+body.dark .badge-purple{background:rgba(139,92,246,.15);color:#a78bfa}
+body.dark .badge-gray{background:var(--surface3);color:var(--text3)}
+.badge-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:6px;font-size:.79rem;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
+.btn-primary{background:var(--b500);color:#fff}
+.btn-primary:hover{background:var(--b600)}
+.btn-green{background:var(--gn);color:#fff}
+.btn-green:hover{background:#059669}
+.btn-red{background:var(--rd);color:#fff}
+.btn-red:hover{background:#dc2626}
+.btn-orange{background:var(--or);color:#fff}
+.btn-orange:hover{background:#ea580c}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface2);border-color:var(--border2)}
+.btn-sm{padding:5px 10px;font-size:.74rem}
+.btn-icon{width:30px;height:30px;padding:0;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text2);background:var(--surface2);border:1px solid var(--border)}
+.btn-icon:hover{background:var(--b50);color:var(--b500);border-color:var(--b300)}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Input/Select */
+.input{height:34px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);padding:0 10px;font-size:.81rem;outline:none;transition:all .2s;font-family:inherit}
+.input:focus{border-color:var(--b400);box-shadow:0 0 0 3px rgba(0,144,217,.1)}
+body.dark .input{background:var(--surface2)}
+.select{height:34px;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);padding:0 10px;font-size:.81rem;outline:none;cursor:pointer;font-family:inherit}
+body.dark .select{background:var(--surface2)}
+.textarea{border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);padding:8px 10px;font-size:.81rem;outline:none;resize:vertical;min-height:80px;width:100%;font-family:inherit;line-height:1.55}
+.textarea:focus{border-color:var(--b400);box-shadow:0 0 0 3px rgba(0,144,217,.1)}
+body.dark .textarea{background:var(--surface2)}
+.label{font-size:.74rem;font-weight:600;color:var(--text2);display:block;margin-bottom:4px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px}
+.form-group{margin-bottom:12px}
+
+/* Filter bar */
+.filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.filter-bar .input{max-width:240px}
+
+/* Charts (pure CSS) */
+.bar-chart{display:flex;align-items:flex-end;gap:4px;height:120px;padding:0 2px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
+.bar-fill-wrap{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.bar-fill{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height .6s ease}
+.bar-lbl{font-size:.6rem;color:var(--text3);text-align:center;white-space:nowrap}
+.bar-val{font-size:.6rem;font-weight:600;color:var(--text2);text-align:center}
+.donut-ring{position:relative;width:110px;height:110px;flex-shrink:0}
+.donut-ring svg{width:110px;height:110px;transform:rotate(-90deg)}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-val{font-family:'Sora',sans-serif;font-weight:800;font-size:1.3rem;color:var(--text);line-height:1}
+.donut-lbl{font-size:.6rem;color:var(--text3);margin-top:2px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:.77rem;color:var(--text2);padding:3px 0}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mini-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.mini-bar-label{font-size:.76rem;color:var(--text2);width:100px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-bar-track{flex:1;height:7px;background:var(--surface3);border-radius:50px;overflow:hidden}
+.mini-bar-fill{height:100%;border-radius:50px;transition:width .7s ease}
+.mini-bar-val{font-size:.72rem;font-weight:600;color:var(--text2);width:40px;text-align:right;flex-shrink:0}
+
+/* Line chart (SVG) */
+.line-chart-wrap{position:relative;height:180px;overflow:hidden}
+.line-chart-wrap svg{width:100%;height:100%}
+
+/* Activity feed */
+.activity-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem}
+.activity-content{flex:1;min-width:0}
+.activity-text{font-size:.8rem;color:var(--text);line-height:1.5}
+.activity-text strong{font-weight:700}
+.activity-time{font-size:.68rem;color:var(--text3);margin-top:2px}
+
+/* Alert items */
+.alert-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--rs);margin-bottom:6px;border-left:3px solid transparent}
+.alert-item.warn{background:var(--gol);border-color:var(--go)}
+.alert-item.danger{background:var(--rl);border-color:var(--rd)}
+.alert-item.info{background:var(--b50);border-color:var(--b400)}
+body.dark .alert-item.warn{background:rgba(245,158,11,.1);border-color:var(--go)}
+body.dark .alert-item.danger{background:rgba(239,68,68,.1);border-color:var(--rd)}
+body.dark .alert-item.info{background:rgba(0,144,217,.08);border-color:var(--b400)}
+.alert-msg{font-size:.79rem;color:var(--text);flex:1}
+.alert-msg strong{font-weight:700}
+.alert-time{font-size:.67rem;color:var(--text3);white-space:nowrap}
+
+/* Tabs */
+.tabs{display:flex;gap:1px;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:16px;border:1px solid var(--border)}
+.tab{padding:6px 14px;border-radius:6px;font-size:.78rem;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:var(--shadow)}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal-bg.on{display:flex;animation:fadeIn .2s ease}
+.modal{background:var(--surface);border-radius:14px;padding:22px;max-width:580px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,.2);animation:fadeUp .25s ease}
+body.dark .modal{border:1px solid var(--border)}
+.modal-title{font-family:'Sora',sans-serif;font-weight:700;font-size:1rem;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.modal-close{margin-left:auto;width:28px;height:28px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--text2);border:none;cursor:pointer;flex-shrink:0}
+.modal-close:hover{background:var(--border2)}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+
+/* NIN Verification specific */
+.doc-viewer{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.doc-box{background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.doc-box:hover{border-color:var(--b400);background:var(--b50)}
+.doc-lbl{font-size:.7rem;font-weight:600;color:var(--text3)}
+.doc-emoji{font-size:2rem}
+.score-bar{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.score-track{flex:1;height:8px;background:var(--surface3);border-radius:50px;overflow:hidden}
+.score-fill{height:100%;border-radius:50px;transition:width .6s ease}
+
+/* Stats mini cards (inline) */
+.stat-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.stat-mini{flex:1;min-width:100px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);padding:10px 12px;text-align:center}
+.stat-mini-v{font-family:'Sora',sans-serif;font-weight:800;font-size:1.05rem;color:var(--text)}
+.stat-mini-l{font-size:.66rem;color:var(--text3);margin-top:2px}
+
+/* Toggle switch */
+.toggle{position:relative;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.toggle input{display:none}
+.toggle-track{width:36px;height:20px;border-radius:50px;background:var(--border2);transition:background .2s;flex-shrink:0;position:relative}
+.toggle input:checked+.toggle-track{background:var(--b500)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle input:checked~.toggle-thumb,.toggle input:checked+.toggle-track .toggle-thumb{left:19px}
+.toggle-label{font-size:.79rem;color:var(--text2)}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;gap:4px;margin-top:14px;justify-content:flex-end}
+.pg-btn{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:500;color:var(--text2);background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:all .2s}
+.pg-btn:hover{background:var(--b50);color:var(--b500);border-color:var(--b300)}
+.pg-btn.on{background:var(--b500);color:#fff;border-color:var(--b500)}
+
+/* Progress ring */
+.prog-ring{display:inline-flex;align-items:center;justify-content:center;position:relative}
+.prog-ring svg{transform:rotate(-90deg)}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:.8rem;font-weight:500;opacity:0;z-index:9999;transition:all .25s;pointer-events:none;max-width:320px;box-shadow:var(--shadow-lg)}
+.toast.on{opacity:1}
+body.dark .toast{background:var(--surface3);color:var(--text);border:1px solid var(--border)}
+
+/* Page header */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.page-h1{font-family:'Sora',sans-serif;font-weight:800;font-size:1.2rem;color:var(--text)}
+.page-sub{font-size:.8rem;color:var(--text3);margin-top:2px}
+
+/* Notification panel */
+.notif-panel{position:absolute;top:calc(var(--topbar-h) + 6px);right:16px;width:320px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);z-index:200;display:none;animation:fadeUp .2s ease}
+.notif-panel.on{display:block}
+.notif-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.notif-title{font-family:'Sora',sans-serif;font-weight:700;font-size:.86rem;color:var(--text)}
+.notif-item{display:flex;gap:10px;padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s}
+.notif-item:last-child{border-bottom:none}
+.notif-item:hover{background:var(--surface2)}
+.notif-item.unread{background:var(--b50)}
+body.dark .notif-item.unread{background:rgba(0,144,217,.07)}
+.notif-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem}
+.notif-txt{font-size:.78rem;color:var(--text);line-height:1.5}
+.notif-time{font-size:.67rem;color:var(--text3);margin-top:2px}
+
+/* Map widget */
+.map-widget{background:linear-gradient(135deg,var(--b50),var(--b100));border-radius:var(--rs);height:160px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;border:1px solid var(--b200)}
+body.dark .map-widget{background:linear-gradient(135deg,rgba(0,144,217,.07),rgba(0,144,217,.13));border-color:rgba(0,144,217,.2)}
+.map-widget::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 18px,rgba(0,144,217,.05) 18px,rgba(0,144,217,.05) 19px),repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(0,144,217,.05) 18px,rgba(0,144,217,.05) 19px)}
+.map-pin{position:absolute;font-size:.95rem}
+.map-legend{position:absolute;bottom:8px;right:8px;background:rgba(255,255,255,.9);border-radius:6px;padding:5px 8px;font-size:.65rem;color:var(--text2);display:flex;flex-direction:column;gap:3px;backdrop-filter:blur(4px)}
+body.dark .map-legend{background:rgba(22,27,34,.9)}
+
+/* Donut/pie chart section */
+.donut-section{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+
+/* Gauge */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center}
+.gauge-val{font-family:'Sora',sans-serif;font-weight:800;font-size:1.3rem;color:var(--text)}
+.gauge-lbl{font-size:.67rem;color:var(--text3)}
+
+/* Scrollable table container */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* Empty state */
+.empty-state{text-align:center;padding:36px 20px;color:var(--text3)}
+.empty-icon{font-size:2.5rem;margin-bottom:10px}
+.empty-msg{font-size:.84rem;font-weight:500;color:var(--text2);margin-bottom:5px}
+.empty-sub{font-size:.76rem;color:var(--text3)}
+
+/* Commission slider */
+.slider{-webkit-appearance:none;width:100%;height:6px;border-radius:50px;background:var(--border2);outline:none;cursor:pointer}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--b500);cursor:pointer}
+.slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--b500);cursor:pointer;border:none}
+
+/* Mobile */
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-230px;z-index:300;transition:left .3s;height:100%}
+  .sidebar.mobile-open{left:0;box-shadow:4px 0 20px rgba(0,0,0,.15)}
+  .mobile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:299;display:none;animation:fadeIn .2s}
+  .mobile-overlay.on{display:block}
+  .content{padding:14px}
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .doc-viewer{grid-template-columns:1fr 1fr}
+  #menu-toggle{display:flex!important}
+}
+#menu-toggle{display:none}
+
+/* ── LANG PILL ── */
+.lang-pill{display:flex;background:var(--surface2);border-radius:50px;padding:3px;gap:2px;border:1px solid var(--border);flex-shrink:0}
+body.dark .lang-pill{background:var(--surface3);border-color:var(--border2)}
+.lp{padding:4px 9px;border-radius:50px;font-size:.71rem;font-weight:700;cursor:pointer;color:var(--text2);transition:all .2s;white-space:nowrap;border:none;background:none;font-family:inherit}
+.lp.on{background:var(--b500);color:#fff;box-shadow:0 2px 5px rgba(0,144,217,.3)}
+body[dir="rtl"] .sidebar{border-right:none;border-left:1px solid var(--border)}
+body[dir="rtl"] .nav-item:hover{transform:translateX(-2px)}
+body[dir="rtl"] .nav-item svg{margin-left:0}
+body[dir="rtl"] .nav-badge{margin-left:0;margin-right:auto}
+body[dir="rtl"] .alert-item{border-left:none;border-right:3px solid transparent}
+body[dir="rtl"] .alert-item.danger{border-right-color:var(--rd)}
+body[dir="rtl"] .alert-item.warn{border-right-color:var(--go)}
+body[dir="rtl"] .alert-item.info{border-right-color:var(--b400)}
+body[dir="rtl"] .mini-bar-label{text-align:right}
+body[dir="rtl"] .data-table th, body[dir="rtl"] .data-table td{text-align:right}
+body[dir="rtl"] .pagination{justify-content:flex-start}
+body[dir="rtl"] .modal-close{margin-left:0;margin-right:auto}
+body[dir="rtl"] .sb-logo{flex-direction:row-reverse}
+body[dir="rtl"],body[dir="rtl"] input,body[dir="rtl"] textarea,body[dir="rtl"] select{font-family:'Noto Kufi Arabic','Plus Jakarta Sans',sans-serif}
+
+/* ── ADMIN LOGIN ── */
+#admin-login{position:fixed;inset:0;z-index:9999;background:linear-gradient(150deg,#040d18,#0d1f33 55%,#16053a);display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.al-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none}
+.al-orb1{width:360px;height:360px;background:rgba(0,144,217,.1);top:-90px;right:-60px}
+.al-orb2{width:220px;height:220px;background:rgba(139,92,246,.09);bottom:-30px;left:-50px}
+.al-card{background:rgba(255,255,255,.06);backdrop-filter:blur(22px);border:1.5px solid rgba(255,255,255,.11);border-radius:18px;padding:clamp(20px,4vw,30px);max-width:420px;width:100%;position:relative;z-index:1;animation:fadeUp .32s ease}
+.al-logo{display:flex;align-items:center;gap:9px;justify-content:center;margin-bottom:16px}
+.al-logo-box{width:34px;height:34px;border-radius:9px;background:rgba(0,0,0,.3);border:1.5px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center}
+.al-title{font-family:'Sora',sans-serif;font-weight:800;font-size:1.1rem;color:#fff;text-align:center;margin-bottom:3px}
+.al-sub{font-size:.75rem;color:rgba(255,255,255,.46);text-align:center;margin-bottom:14px}
+.al-roles{display:flex;background:rgba(255,255,255,.07);border-radius:50px;padding:3px;gap:2px;margin-bottom:13px}
+.al-role{flex:1;padding:7px;border-radius:50px;font-size:.74rem;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;text-align:center;transition:all .18s;border:none;background:none;font-family:inherit}
+.al-role.on{background:#fff;color:#1a0533;font-weight:700}
+.al-role:hover:not(.on){background:rgba(255,255,255,.1);color:rgba(255,255,255,.85)}
+.al-fi{width:100%;height:43px;border-radius:8px;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;padding:0 13px;font-size:.84rem;transition:all .2s;margin-bottom:9px;display:block;font-family:inherit;outline:none}
+.al-fi:focus{border-color:#5cbdff;background:rgba(255,255,255,.11)}
+.al-fi::placeholder{color:rgba(255,255,255,.3)}
+.al-fw{position:relative;margin-bottom:9px}
+.al-fw .al-fi{margin-bottom:0;padding-right:40px}
+.al-eye{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4);background:none;border:none;cursor:pointer;font-size:.75rem;padding:0}
+.al-btn{width:100%;height:44px;border-radius:50px;background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;font-weight:700;font-size:.87rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 16px rgba(109,40,217,.32);transition:all .2s;font-family:inherit;border:none}
+.al-btn:hover{transform:translateY(-2px)}
+.al-demo{font-size:.69rem;color:rgba(255,255,255,.32);text-align:center;margin-top:9px}
+.al-demo a{color:rgba(255,255,255,.6);font-weight:700;cursor:pointer}
+.al-demo a:hover{color:#fff}
+.al-back{text-align:center;margin-top:7px;font-size:.69rem;color:rgba(255,255,255,.32)}
+.al-back a{color:rgba(255,255,255,.52);font-weight:600;cursor:pointer}
+.al-back a:hover{color:#fff}
+.al-loader{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+/* back-to-platform btn in topbar */
+.back-plat-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:50px;background:var(--surface2);border:1px solid var(--border2);font-size:.71rem;font-weight:600;color:var(--text2);cursor:pointer;transition:all .18s;white-space:nowrap;text-decoration:none;font-family:inherit}
+.back-plat-btn:hover{background:var(--b50);color:var(--b500);border-color:var(--b400)}
+body.dark .back-plat-btn:hover{background:rgba(0,144,217,.1);color:var(--b300)}
+/* wrapper hide until logged in */
+#admin-wrap{display:none}
+#admin-wrap.on{display:flex}
+
+</style>
+</head>
+<body>
+
+<!-- ══ ADMIN LOGIN ══ -->
+<div id="admin-login">
+  <div class="al-orb al-orb1"></div>
+  <div class="al-orb al-orb2"></div>
+  <div class="al-card">
+    <div class="al-logo">
+      <div class="al-logo-box">
+        <svg width="16" height="14" viewBox="0 0 60 55" fill="none">
+          <path d="M30 5L55 27L50 27L50 50L35 50L35 36L25 36L25 50L10 50L10 27L5 27Z" stroke="#29B6F6" stroke-width="3" fill="none" stroke-linejoin="round"/>
+          <path d="M18 42L18 22L30 34L42 22L42 42" stroke="#29B6F6" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span style="font-family:'Sora',sans-serif;font-weight:900;font-size:1.05rem;color:#fff;letter-spacing:-.4px">Maawa Admin</span>
+      <span style="font-size:.54rem;font-weight:700;background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:2px 6px;border-radius:50px">BETA</span>
+    </div>
+    <div class="al-title">Panneau de contrôle</div>
+    <div class="al-sub">Accès réservé aux administrateurs Maawa</div>
+    <div class="al-roles">
+      <button class="al-role on" id="alr-super" onclick="setAdminRole(this,'super')">🔐 Super Admin</button>
+      <button class="al-role" id="alr-mod" onclick="setAdminRole(this,'mod')">🛡️ Modérateur</button>
+      <button class="al-role" id="alr-fin" onclick="setAdminRole(this,'fin')">💰 Finance</button>
+    </div>
+    <input class="al-fi" type="email" id="al-email" placeholder="admin@maawa.dz" value="admin@maawa.dz">
+    <div class="al-fw">
+      <input class="al-fi" type="password" id="al-pw" placeholder="••••••••" value="Admin2026">
+      <button class="al-eye" onclick="document.getElementById('al-pw').type=document.getElementById('al-pw').type==='password'?'text':'password'">👁</button>
+    </div>
+    <button class="al-btn" id="al-login-btn" onclick="adminLogin()">
+      <span id="al-btn-txt">Accéder au panneau</span>
+    </button>
+    <div class="al-demo">
+      Démo rapide:
+      <a onclick="setAdminRole(document.getElementById('alr-super'),'super');adminLogin()">Super Admin</a> ·
+      <a onclick="setAdminRole(document.getElementById('alr-mod'),'mod');adminLogin()">Modérateur</a> ·
+      <a onclick="setAdminRole(document.getElementById('alr-fin'),'fin');adminLogin()">Finance</a>
+    </div>
+    <div class="al-back">
+      <a onclick="window.location.href='maawa_v4_fixed-2.html'">← Retour à la plateforme Maawa</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ ADMIN WRAP ══ -->
+<div id="admin-wrap">
+
+
+<!-- MOBILE OVERLAY -->
+<div class="mobile-overlay" id="mob-overlay" onclick="closeMobileSb()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-box"><svg width="18" height="16" viewBox="0 0 60 55" fill="none"><path d="M30 5L55 27L50 27L50 50L35 50L35 36L25 36L25 50L10 50L10 27L5 27Z" stroke="#29B6F6" stroke-width="3" fill="none" stroke-linejoin="round"/><path d="M18 42L18 22L30 34L42 22L42 42" stroke="#29B6F6" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M10 50Q30 60 50 50" stroke="#29B6F6" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></div>
+    <span class="sb-logo-txt">Maawa <strong>Admin</strong></span>
+    <span class="sb-logo-badge">BETA</span>
+  </div>
+
+  <nav class="sb-nav">
+    <div class="sb-section" data-i18n="nav_principal">Principal</div>
+    <div class="nav-item on" onclick="goPage('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      <span data-i18n="nav_dashboard">Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="goPage('analytics',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span data-i18n="nav_analytics">Analytics</span>
+    </div>
+
+    <div class="sb-section" data-i18n="nav_users_sct">Utilisateurs</div>
+    <div class="nav-item" onclick="goPage('users',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span data-i18n="nav_users">Utilisateurs</span>
+    </div>
+    <div class="nav-item" onclick="goPage('verification',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span data-i18n="nav_verification">Vérification NIN</span>
+      <span class="nav-badge">7</span>
+    </div>
+
+    <div class="sb-section" data-i18n="nav_ops">Opérations</div>
+    <div class="nav-item" onclick="goPage('missions',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span data-i18n="nav_missions">Missions</span>
+    </div>
+    <div class="nav-item" onclick="goPage('finance',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      <span>Finance & SafePay</span>
+    </div>
+    <div class="nav-item" onclick="goPage('disputes',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span data-i18n="nav_disputes">Litiges</span>
+      <span class="nav-badge">3</span>
+    </div>
+
+    <div class="sb-section" data-i18n="nav_content">Contenu</div>
+    <div class="nav-item" onclick="goPage('moderation',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span data-i18n="nav_moderation">Modération</span>
+      <span class="nav-badge">12</span>
+    </div>
+    <div class="nav-item" onclick="goPage('broadcast',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.38C1.62 2.18 2.53 1 3.72 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span data-i18n="nav_broadcast">Diffusions</span>
+    </div>
+
+    <div class="sb-section" data-i18n="nav_system">Système</div>
+    <div class="nav-item" onclick="goPage('settings',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span data-i18n="nav_settings">Paramètres</span>
+    </div>
+    <div class="nav-item" onclick="goPage('audit',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span data-i18n="nav_audit">Journal d'audit</span>
+    </div>
+  </nav>
+
+  <div class="sb-bottom">
+    <div class="sb-user" onclick="adminLogout()" title="Se deconnecter" style="cursor:pointer">
+      <div class="sb-avatar">SA</div>
+      <div style="flex:1;overflow:hidden">
+        <div class="sb-uname">Super Admin</div>
+        <div class="sb-urole">admin@maawa.dz</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN WRAP -->
+<div class="main-wrap">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <button class="tb-toggle" id="menu-toggle" onclick="toggleMobileSb()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <button class="tb-toggle" onclick="toggleSb()" style="display:flex">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="21" y2="12"/><line x1="9" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="tb-title" id="page-title">Dashboard</div>
+    <div class="tb-search">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Rechercher utilisateur, mission, #ID…" id="global-search">
+    </div>
+    <div class="tb-right" style="position:relative">
+      <button class="icon-btn" onclick="toggleNotif()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-dot"></div>
+      </button>
+      <!-- NOTIFICATION PANEL -->
+      <div class="notif-panel" id="notif-panel">
+        <div class="notif-head"><div class="notif-title" data-i18n="notif_title">Notifications</div><button class="btn btn-ghost btn-sm">Tout lire</button></div>
+        <div class="notif-item unread"><div class="notif-icon" style="background:var(--rl)">🚨</div><div><div class="notif-txt"><strong>Litige #D-2041</strong> — Mission escaladée au niveau légal</div><div class="notif-time">Il y a 5 min</div></div></div>
+        <div class="notif-item unread"><div class="notif-icon" style="background:var(--gol)">⏳</div><div><div class="notif-txt"><strong>7 vérifications NIN</strong> en attente depuis plus de 24h</div><div class="notif-time">Il y a 1h</div></div></div>
+        <div class="notif-item unread"><div class="notif-icon" style="background:var(--gl)">💰</div><div><div class="notif-txt">Paiement SafePay <strong>42 500 DZD</strong> en attente de libération</div><div class="notif-time">Il y a 2h</div></div></div>
+        <div class="notif-item"><div class="notif-icon" style="background:var(--pl)">📊</div><div><div class="notif-txt">Rapport mensuel <strong>Mars 2026</strong> disponible</div><div class="notif-time">Hier 09:00</div></div></div>
+        <div class="notif-item"><div class="notif-icon" style="background:var(--b100)">🔒</div><div><div class="notif-txt">Tentative de connexion suspecte depuis <strong>Tlemcen</strong></div><div class="notif-time">Hier 23:14</div></div></div>
+      </div>
+      <button class="icon-btn" onclick="toast('📊 Export en cours…')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+      <div class="lang-pill">
+        <button class="lp" id="lp-ar" onclick="setLang('ar')">🇩🇿 AR</button>
+        <button class="lp on" id="lp-fr" onclick="setLang('fr')">🇫🇷 FR</button>
+        <button class="lp" id="lp-en" onclick="setLang('en')">🇬🇧 EN</button>
+      </div>
+      <button class="tb-dm" id="dm-btn" onclick="toggleDark()">🌙</button>
+      <a href="maawa_v4_fixed-2.html" class="back-plat-btn" title="Retour Plateforme">← <span>Plateforme</span></a>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content" id="content">
+    <!-- ══════════════════ DASHBOARD ══════════════════ -->
+    <div class="page on" id="page-dashboard">
+      <div class="page-header au">
+        <div><div class="page-h1" data-i18n="pt_dashboard">Vue d'ensemble 📊</div><div class="page-sub" data-i18n="pt_dashboard_sub">Mars 2026 · Mis à jour il y a 2 min</div></div>
+        <div class="btn-row">
+          <select class="select" style="height:34px"><option>Mars 2026</option><option>Fév 2026</option><option>Jan 2026</option></select>
+          <button class="btn btn-primary" onclick="toast('📊 Rapport exporté !')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exporter</button>
+        </div>
+      </div>
+
+      <!-- ALERTS -->
+      <div class="au1" style="margin-bottom:16px">
+        <div class="alert-item danger"><span style="font-size:1rem">🚨</span><div class="alert-msg" data-i18n="alert_disputes"><strong>3 litiges actifs</strong> nécessitent une intervention immédiate</div><span class="alert-time">Maintenant</span><button class="btn btn-red btn-sm" style="margin-left:8px" onclick="goPage('disputes',null)">Voir →</button></div>
+        <div class="alert-item warn"><span style="font-size:1rem">⏳</span><div class="alert-msg" data-i18n="alert_nin"><strong>7 vérifications NIN</strong> en attente depuis plus de 24h (SLA dépassé)</div><span class="alert-time">+24h</span><button class="btn btn-orange btn-sm" style="margin-left:8px" onclick="goPage('verification',null)">Traiter →</button></div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid au2">
+        <div class="kpi-card">
+          <div class="kpi-top"><div class="kpi-icon" style="background:var(--b100)">💰</div><span class="kpi-trend up">↑ +18%</span></div>
+          <div class="kpi-val">8,47M</div>
+          <div class="kpi-label" data-i18n="kpi_revenue">Chiffre d'affaires (DZD)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><div class="kpi-icon" style="background:var(--gl)">✅</div><span class="kpi-trend up">↑ +24%</span></div>
+          <div class="kpi-val">1 284</div>
+          <div class="kpi-label" data-i18n="kpi_missions">Missions terminées ce mois</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><div class="kpi-icon" style="background:var(--pl)">👥</div><span class="kpi-trend up">↑ +832</span></div>
+          <div class="kpi-val">47 218</div>
+          <div class="kpi-label" data-i18n="kpi_users">Utilisateurs actifs</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-top"><div class="kpi-icon" style="background:var(--gol)">🪙</div><span class="kpi-trend neutral">→ stable</span></div>
+          <div class="kpi-val">124K</div>
+          <div class="kpi-label" data-i18n="kpi_coins">Maawa Coins en circulation</div>
+        </div>
+      </div>
+
+      <!-- SECONDARY KPIs -->
+      <div class="stat-row au3">
+        <div class="stat-mini"><div class="stat-mini-v" style="color:var(--b500)">3 841</div><div class="stat-mini-l">Artisans vérifiés</div></div>
+        <div class="stat-mini"><div class="stat-mini-v" style="color:var(--gn)">96.2%</div><div class="stat-mini-l">Taux satisfaction</div></div>
+        <div class="stat-mini"><div class="stat-mini-v" style="color:var(--or)">3</div><div class="stat-mini-l">Litiges ouverts</div></div>
+        <div class="stat-mini"><div class="stat-mini-v" style="color:var(--pu)">7</div><div class="stat-mini-l">NIN en attente</div></div>
+        <div class="stat-mini"><div class="stat-mini-v" style="color:var(--rd)">12</div><div class="stat-mini-l">Contenus signalés</div></div>
+        <div class="stat-mini"><div class="stat-mini-v" style="color:var(--gn)">42 500</div><div class="stat-mini-l">DZD SafePay escrow</div></div>
+      </div>
+
+      <div class="grid-3 au4">
+        <!-- REVENUE CHART -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--b500)" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Revenus journaliers (DZD)</div>
+            <div class="btn-row">
+              <button class="btn btn-ghost btn-sm on" style="background:var(--b500);color:#fff;border-color:var(--b500)">7j</button>
+              <button class="btn btn-ghost btn-sm" onclick="toast('Vue 30j')">30j</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="bar-chart" id="revenue-chart"></div>
+            <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+              <div><div style="font-size:.72rem;color:var(--text3)" data-i18n="this_week">Cette semaine</div><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:.92rem;color:var(--text)">1,94M DZD</div></div>
+              <div style="text-align:right"><div style="font-size:.72rem;color:var(--text3)" data-i18n="last_week">Semaine passée</div><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:.92rem;color:var(--text)">1,61M DZD</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MISSION DONUT -->
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="missions_status">Statut Missions</div></div>
+          <div class="card-body">
+            <div class="donut-section">
+              <div class="donut-ring">
+                <svg viewBox="0 0 42 42"><circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--border2)" stroke-width="3"/><circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--b500)" stroke-width="3" stroke-dasharray="42 58" stroke-dashoffset="0"/><circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--gn)" stroke-width="3" stroke-dasharray="32 68" stroke-dashoffset="-42"/><circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--or)" stroke-width="3" stroke-dasharray="15 85" stroke-dashoffset="-74"/><circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--rd)" stroke-width="3" stroke-dasharray="11 89" stroke-dashoffset="-89"/></svg>
+                <div class="donut-center"><div class="donut-val">1 284</div><div class="donut-lbl">Total</div></div>
+              </div>
+              <div style="flex:1">
+                <div class="legend-item"><div class="legend-dot" style="background:var(--b500)"></div>En cours <span style="margin-left:auto;font-weight:700;font-size:.78rem">42%</span></div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--gn)"></div>Terminées <span style="margin-left:auto;font-weight:700;font-size:.78rem">32%</span></div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--or)"></div>En dispatch <span style="margin-left:auto;font-weight:700;font-size:.78rem">15%</span></div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--rd)"></div>Litiges <span style="margin-left:auto;font-weight:700;font-size:.78rem">11%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2 au4" style="margin-top:14px">
+        <!-- TOP WILAYAS -->
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="top_wilayas">🗺️ Top Wilayas — Activité</div><button class="btn btn-ghost btn-sm" onclick="goPage('analytics',null)">Voir tout →</button></div>
+          <div class="card-body">
+            <div class="map-widget" style="margin-bottom:12px">
+              <div class="map-pin" style="top:30%;left:32%;font-size:1.4rem">📍</div>
+              <div class="map-pin" style="top:28%;left:60%;font-size:1.1rem">📍</div>
+              <div class="map-pin" style="top:45%;left:48%;font-size:.9rem">📍</div>
+              <div class="map-pin" style="top:22%;left:25%;font-size:.85rem">📍</div>
+              <div class="map-pin" style="top:55%;left:36%;font-size:.8rem">📍</div>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;color:var(--b500)" data-i18n="map_label">Algérie · 48 Wilayas</div>
+              <div class="map-legend"><div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--b500)"></div>Haute activité</div><div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:50%;background:var(--b300)"></div>Activité normale</div></div>
+            </div>
+            <div class="mini-bar-row"><div class="mini-bar-label">16 · Alger</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:88%;background:var(--b500)"></div></div><div class="mini-bar-val">18 421</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">31 · Oran</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:54%;background:var(--b400)"></div></div><div class="mini-bar-val">11 242</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">25 · Constantine</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:38%;background:var(--b300)"></div></div><div class="mini-bar-val">7 884</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">06 · Béjaïa</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:28%;background:var(--b200)"></div></div><div class="mini-bar-val">5 712</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">09 · Blida</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:22%;background:var(--b200)"></div></div><div class="mini-bar-val">4 559</div></div>
+          </div>
+        </div>
+
+        <!-- ACTIVITY FEED -->
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="activity_live">⚡ Activité temps réel</div><span class="badge badge-green"><div class="badge-dot" style="background:var(--gn);animation:pulse 1.5s infinite"></div>Live</span></div>
+          <div class="card-body" style="padding:8px 18px">
+            <div class="activity-item"><div class="activity-icon" style="background:var(--gl)">✅</div><div class="activity-content"><div class="activity-text">Mission <strong>#MW-4821</strong> validée — Karim Plombier · Alger</div><div class="activity-time">Il y a 1 min</div></div><span class="badge badge-green">+4 500 DZD</span></div>
+            <div class="activity-item"><div class="activity-icon" style="background:var(--pl)">👤</div><div class="activity-content"><div class="activity-text">Nouveau client inscrit : <strong>Meriem B.</strong> · Oran</div><div class="activity-time">Il y a 3 min</div></div></div>
+            <div class="activity-item"><div class="activity-icon" style="background:var(--rl)">🚨</div><div class="activity-content"><div class="activity-text">Litige ouvert <strong>#D-2041</strong> — Mission #MW-4799</div><div class="activity-time">Il y a 5 min</div></div><button class="btn btn-ghost btn-sm" onclick="goPage('disputes',null)">Voir</button></div>
+            <div class="activity-item"><div class="activity-icon" style="background:var(--b100)">🔧</div><div class="activity-content"><div class="activity-text">NIN soumis : <strong>Yacine M.</strong> · Électricien · Tizi Ouzou</div><div class="activity-time">Il y a 8 min</div></div><button class="btn btn-ghost btn-sm" onclick="goPage('verification',null)">Vérifier</button></div>
+            <div class="activity-item"><div class="activity-icon" style="background:var(--gol)">🪙</div><div class="activity-content"><div class="activity-text">Achat <strong>500 MC</strong> · Abdellah R. via Chargily Pay</div><div class="activity-time">Il y a 11 min</div></div></div>
+            <div class="activity-item"><div class="activity-icon" style="background:var(--gl)">🔒</div><div class="activity-content"><div class="activity-text">SafePay libéré <strong>18 000 DZD</strong> — Mission #MW-4815</div><div class="activity-time">Il y a 14 min</div></div></div>
+            <div class="activity-item"><div class="activity-icon" style="background:var(--rl)">🚫</div><div class="activity-content"><div class="activity-text">Post signalé par 3 utilisateurs — <strong>@sofiane.m</strong></div><div class="activity-time">Il y a 18 min</div></div><button class="btn btn-ghost btn-sm" onclick="goPage('moderation',null)">Modérer</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP ARTISANS TABLE -->
+      <div class="card au5" style="margin-top:14px">
+        <div class="card-header"><div class="card-title" data-i18n="top_artisans">⭐ Top Artisans — Ce mois</div><button class="btn btn-ghost btn-sm" onclick="goPage('users',null)">Voir tous →</button></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Artisan</th><th data-i18n="th_trade">Métier</th><th data-i18n="th_wilaya">Wilaya</th><th>Missions</th><th>Revenus DZD</th><th>Note</th><th>Statut</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:'Sora',sans-serif;font-weight:700;color:var(--go)">🥇</td><td class="name"><div style="display:flex;align-items:center;gap:8px"><div class="avatar av1">KP</div>Karim Plombier</div></td><td>🔧 Plomberie</td><td>Alger-Centre</td><td><strong>47</strong></td><td style="font-weight:700;color:var(--b600)">84 500</td><td><span style="color:var(--go)">★★★★★</span> 4.9</td><td><span class="badge badge-green">✓ Vérifié</span></td><td><button class="btn-icon" onclick="openUserModal('KP')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button></td></tr>
+              <tr><td style="font-family:'Sora',sans-serif;font-weight:700;color:var(--text3)">🥈</td><td class="name"><div style="display:flex;align-items:center;gap:8px"><div class="avatar av3">FA</div>Fatima Amine</div></td><td>🎨 Peinture</td><td>Hydra</td><td><strong>38</strong></td><td style="font-weight:700;color:var(--b600)">72 200</td><td><span style="color:var(--go)">★★★★★</span> 4.8</td><td><span class="badge badge-green">✓ Vérifié</span></td><td><button class="btn-icon" onclick="openUserModal('FA')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button></td></tr>
+              <tr><td style="font-family:'Sora',sans-serif;font-weight:700;color:var(--or)">🥉</td><td class="name"><div style="display:flex;align-items:center;gap:8px"><div class="avatar av2">RB</div>Riad Boukhalfa</div></td><td>⚡ Électricité</td><td>Ben Aknoun</td><td><strong>32</strong></td><td style="font-weight:700;color:var(--b600)">61 800</td><td><span style="color:var(--go)">★★★★☆</span> 4.7</td><td><span class="badge badge-green">✓ Vérifié</span></td><td><button class="btn-icon" onclick="openUserModal('RB')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button></td></tr>
+              <tr><td>4</td><td class="name"><div style="display:flex;align-items:center;gap:8px"><div class="avatar av5">LH</div>Lina Hamza</div></td><td>🏠 Carrelage</td><td>Kouba</td><td><strong>29</strong></td><td style="font-weight:700;color:var(--b600)">54 100</td><td><span style="color:var(--go)">★★★★★</span> 4.9</td><td><span class="badge badge-green">✓ Vérifié</span></td><td><button class="btn-icon" onclick="openUserModal('LH')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ ANALYTICS ══════════════════ -->
+    <div class="page" id="page-analytics">
+      <div class="page-header au"><div><div class="page-h1" data-i18n="pt_analytics">Analytics 📈</div><div class="page-sub" data-i18n="pt_analytics_sub">Métriques de croissance et performance</div></div><button class="btn btn-primary" onclick="toast('📄 Rapport PDF généré !')">Exporter PDF</button></div>
+      <div class="kpi-grid au1">
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--pl)">📈</div><span class="kpi-trend up">↑ +4.2%</span></div><div class="kpi-val">+832</div><div class="kpi-label">Nouveaux utilisateurs (semaine)</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--gl)">🔄</div><span class="kpi-trend up">↑ +7%</span></div><div class="kpi-val">68%</div><div class="kpi-label">Taux de rétention (30j)</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--gol)">⚡</div><span class="kpi-trend down">↓ -2%</span></div><div class="kpi-val">34 min</div><div class="kpi-label">Temps moyen/session</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--b100)">🎯</div><span class="kpi-trend up">↑ +11%</span></div><div class="kpi-val">12.4%</div><div class="kpi-label">Taux de conversion visite→mission</div></div>
+      </div>
+      <div class="grid-2 au2">
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="analytics_growth">Croissance Utilisateurs (12 mois)</div></div>
+          <div class="card-body"><div class="bar-chart" id="users-chart"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="analytics_revenue">Revenus Maawa (12 mois)</div></div>
+          <div class="card-body"><div class="bar-chart" id="rev-chart"></div></div>
+        </div>
+      </div>
+      <div class="grid-2 au3" style="margin-top:14px">
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="analytics_by_trade">Répartition par métier</div></div>
+          <div class="card-body">
+            <div class="mini-bar-row"><div class="mini-bar-label">🔧 Plomberie</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:78%;background:var(--b500)"></div></div><div class="mini-bar-val">1 247</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">⚡ Électricité</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:100%;background:var(--b400)"></div></div><div class="mini-bar-val">2 108</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">🎨 Peinture</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:62%;background:var(--gn)"></div></div><div class="mini-bar-val">892</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">🧱 Maçonnerie</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:47%;background:var(--or)"></div></div><div class="mini-bar-val">543</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">🪚 Menuiserie</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:52%;background:var(--pu)"></div></div><div class="mini-bar-val">671</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">🏠 Carrelage</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:58%;background:var(--b300)"></div></div><div class="mini-bar-val">784</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">❄️ Climatisation</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:32%;background:var(--b200)"></div></div><div class="mini-bar-val">329</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="analytics_funnel">Entonnoir de conversion</div></div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="background:var(--b500);border-radius:6px;padding:10px 14px;color:#fff;display:flex;justify-content:space-between"><span style="font-size:.8rem;font-weight:600">Visites</span><span style="font-family:'Sora',sans-serif;font-weight:800">124 500</span></div>
+              <div style="background:var(--b400);border-radius:6px;padding:10px 14px;color:#fff;display:flex;justify-content:space-between;margin:0 10px"><span style="font-size:.8rem;font-weight:600">Inscriptions</span><span style="font-family:'Sora',sans-serif;font-weight:800">47 218 <span style="font-size:.72rem;opacity:.8">(38%)</span></span></div>
+              <div style="background:var(--b300);border-radius:6px;padding:10px 14px;color:var(--b800);display:flex;justify-content:space-between;margin:0 20px"><span style="font-size:.8rem;font-weight:600">Devis demandés</span><span style="font-family:'Sora',sans-serif;font-weight:800">22 841 <span style="font-size:.72rem;opacity:.7">(48%)</span></span></div>
+              <div style="background:var(--gn);border-radius:6px;padding:10px 14px;color:#fff;display:flex;justify-content:space-between;margin:0 30px"><span style="font-size:.8rem;font-weight:600">Missions lancées</span><span style="font-family:'Sora',sans-serif;font-weight:800">15 472 <span style="font-size:.72rem;opacity:.8">(68%)</span></span></div>
+              <div style="background:var(--go);border-radius:6px;padding:10px 14px;color:#fff;display:flex;justify-content:space-between;margin:0 40px"><span style="font-size:.8rem;font-weight:600">Missions validées</span><span style="font-family:'Sora',sans-serif;font-weight:800">12 340 <span style="font-size:.72rem;opacity:.8">(80%)</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ USERS ══════════════════ -->
+    <div class="page" id="page-users">
+      <div class="page-header au"><div><div class="page-h1" data-i18n="pt_users">Gestion Utilisateurs 👥</div><div class="page-sub" data-i18n="pt_users_sub">47 218 utilisateurs · 3 841 artisans vérifiés</div></div><button class="btn btn-primary" onclick="toast('📤 Export CSV lancé')">Exporter</button></div>
+      <div class="tabs au1">
+        <div class="tab on" onclick="setTab(this,'tab-all-users')">Tous (47 218)</div>
+        <div class="tab" onclick="setTab(this,'tab-artisans')">Artisans (3 841)</div>
+        <div class="tab" onclick="setTab(this,'tab-clients')">Clients (43 377)</div>
+        <div class="tab" onclick="setTab(this,'tab-suspended')">Suspendus (142)</div>
+      </div>
+      <div class="filter-bar au2">
+        <input class="input" type="text" placeholder="Rechercher nom, email, NIN, #ID…" style="max-width:280px">
+        <select class="select"><option>Toutes les wilayas</option><option>Alger (16)</option><option>Oran (31)</option><option>Constantine (25)</option></select>
+        <select class="select"><option>Tous les statuts</option><option>✅ Actif</option><option>⚠️ Suspendu</option><option>🚫 Banni</option></select>
+        <select class="select"><option>Trier par : Date inscription</option><option>Note ↓</option><option>Missions ↓</option></select>
+      </div>
+      <div class="card au3">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th><input type="checkbox"></th><th data-i18n="th_user">Utilisateur</th><th data-i18n="th_type">Type</th><th>Wilaya</th><th data-i18n="th_joined">Inscrit le</th><th>Missions</th><th data-i18n="th_nin_status">Statut NIN</th><th data-i18n="th_account_status">Statut compte</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><input type="checkbox"></td><td class="name"><div style="display:flex;align-items:center;gap:8px"><div class="avatar av1">KP</div><div><div>Karim Plombier</div><div style="font-size:.68rem;color:var(--text3)">karim.p@gmail.com · #A-1042</div></div></div></td><td><span class="badge badge-blue">🔧 Artisan</span></td><td>Alger</td><td style="color:var(--text3)">12/01/2024</td><td><strong>137</strong></td><td><span class="badge badge-green">✓ Vérifié</span></td><td><span class="badge badge-green">● Actif</span></td><td><div class="btn-row"><button class="btn-icon" onclick="openUserModal('KP')" title="Voir profil"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button><button class="btn-icon" onclick="toast('✉️ Email envoyé')" title="Contacter"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button><button class="btn-icon" style="color:var(--or);border-color:var(--or)" onclick="toast('⚠️ Compte suspendu 24h')" title="Suspendre"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></button></div></td></tr>
+              <tr><td><input type="checkbox"></td><td class="name"><div style="display:flex;align-items:center;gap:8px"><div class="avatar av3">FA</div><div><div>Fatima Amine</div><div style="font-size:.68rem;color:var(--text3)">fatima.amine@hotmail.com · #A-0891</div></div></div></td><td><span class="badge badge-blue">🎨 Artisan</span></td><td>Alger</td><td style="color:var(--text3)">03/04/2024</td><td><strong>89</strong></td><td><span class="badge badge-green">✓ Vérifié</span></td><td><span class="badge badge-green">● Actif</span></td><td><div class="btn-row"><button class="btn-icon" onclick="openUserModal('FA')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button><button class="btn-icon" onclick="toast('✉️')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button><button class="btn-icon" style="color:var(--or);border-color:var(--or)" onclick="toast('⚠️ Suspendu')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></button></div></td></tr>
+              <tr><td><input type="checkbox"></td><td class="name"><div style="display:flex;align-items:center;gap:8px"><div class="avatar av4">YO</div><div><div>Youssef Omar</div><div style="font-size:.68rem;color:var(--text3)">youssef.o@yahoo.com · #C-8812</div></div></div></td><td><span class="badge badge-purple">👤 Client</span></td><td>Alger</td><td style="color:var(--text3)">08/11/2024</td><td><strong>12</strong></td><td><span class="badge badge-gray">N/A</span></td><td><span class="badge badge-green">● Actif</span></td><td><div class="btn-row"><button class="btn-icon" onclick="openUserModal('YO')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button><button class="btn-icon" onclick="toast('✉️')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></button><button class="btn-icon" style="color:var(--or);border-color:var(--or)" onclick="toast('⚠️ Suspendu')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></button></div></td></tr>
+              <tr style="opacity:.6"><td><input type="checkbox"></td><td class="name"><div style="display:flex;align-items:center;gap:8px"><div class="avatar av4" style="background:var(--rd)">MF</div><div><div>Mohamed Farhat</div><div style="font-size:.68rem;color:var(--text3)">m.farhat@email.com · #A-2144</div></div></div></td><td><span class="badge badge-blue">🔧 Artisan</span></td><td>Oran</td><td style="color:var(--text3)">19/07/2024</td><td><strong>3</strong></td><td><span class="badge badge-orange">⚠️ En attente</span></td><td><span class="badge badge-red">⊘ Suspendu</span></td><td><div class="btn-row"><button class="btn-icon" onclick="openUserModal('MF')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></button><button class="btn-icon" style="color:var(--gn);border-color:var(--gn)" onclick="toast('✅ Compte réactivé')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" style="padding:10px 16px">
+          <button class="pg-btn">‹</button>
+          <button class="pg-btn on">1</button>
+          <button class="pg-btn">2</button>
+          <button class="pg-btn">3</button>
+          <span style="font-size:.78rem;color:var(--text3);padding:0 8px">… 4 721 pages</span>
+          <button class="pg-btn">›</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ NIN VERIFICATION ══════════════════ -->
+    <div class="page" id="page-verification">
+      <div class="page-header au"><div><div class="page-h1" data-i18n="pt_verification">Vérification NIN 🪪</div><div class="page-sub" data-i18n="pt_verification_sub">7 dossiers en attente · SLA 24h</div></div><div class="btn-row"><span class="badge badge-orange" style="font-size:.8rem;padding:6px 12px">⏳ 7 en attente</span><span class="badge badge-green" style="font-size:.8rem;padding:6px 12px">✓ 14 approuvés aujourd'hui</span></div></div>
+      <div class="grid-2 au1">
+        <!-- QUEUE LIST -->
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="nin_queue">File d'attente</div></div>
+          <div id="nin-queue">
+            <div class="activity-item" style="cursor:pointer;padding:12px 18px" onclick="openNINModal('Yacine M.',85,'⚡')"><div class="activity-icon" style="background:var(--rl)">🕐</div><div class="activity-content"><div class="activity-text"><strong>Yacine Mabrouk</strong> · ⚡ Électricien · Tizi Ouzou</div><div class="activity-time">Soumis il y a 2h · Score fraude: 8/100 ✅</div></div><span class="badge badge-orange">En attente</span></div>
+            <div class="activity-item" style="cursor:pointer;padding:12px 18px" onclick="openNINModal('Amel S.',72,'🎨')"><div class="activity-icon" style="background:var(--gol)">🕑</div><div class="activity-content"><div class="activity-text"><strong>Amel Saadi</strong> · 🎨 Peintre · Oran</div><div class="activity-time">Soumis il y a 4h · Score fraude: 15/100 ✅</div></div><span class="badge badge-orange">En attente</span></div>
+            <div class="activity-item" style="cursor:pointer;padding:12px 18px;background:var(--rl)" onclick="openNINModal('Omar B.',42,'🔧')"><div class="activity-icon" style="background:var(--rl)">⚠️</div><div class="activity-content"><div class="activity-text"><strong>Omar Benali</strong> · 🔧 Plombier · Constantine</div><div class="activity-time">Soumis il y a 28h · Score fraude: <strong style="color:var(--rd)">68/100 ⚠️</strong></div></div><span class="badge badge-red">Risque élevé</span></div>
+            <div class="activity-item" style="cursor:pointer;padding:12px 18px" onclick="openNINModal('Nadia K.',90,'🧱')"><div class="activity-icon" style="background:var(--b100)">🕒</div><div class="activity-content"><div class="activity-text"><strong>Nadia Khelifi</strong> · 🧱 Maçon · Blida</div><div class="activity-time">Soumis il y a 6h · Score fraude: 5/100 ✅</div></div><span class="badge badge-orange">En attente</span></div>
+            <div class="activity-item" style="cursor:pointer;padding:12px 18px" onclick="openNINModal('Samir R.',78,'🪚')"><div class="activity-icon" style="background:var(--b100)">🕓</div><div class="activity-content"><div class="activity-text"><strong>Samir Rahmani</strong> · 🪚 Menuisier · Annaba</div><div class="activity-time">Soumis il y a 9h · Score fraude: 22/100 ✅</div></div><span class="badge badge-orange">En attente</span></div>
+          </div>
+        </div>
+        <!-- QUICK STATS -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card"><div class="card-header"><div class="card-title" data-i18n="nin_stats_today">Statistiques du jour</div></div><div class="card-body">
+            <div class="mini-bar-row"><div class="mini-bar-label">Approuvés</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:82%;background:var(--gn)"></div></div><div class="mini-bar-val">14</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">Rejetés</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:18%;background:var(--rd)"></div></div><div class="mini-bar-val">3</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">En attente</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:40%;background:var(--or)"></div></div><div class="mini-bar-val">7</div></div>
+            <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:.75rem;color:var(--text3)">Temps moyen de traitement</div><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text)">4h 22min</div></div>
+          </div></div>
+          <div class="card"><div class="card-header"><div class="card-title" data-i18n="nin_approval_rate">Taux d'approbation (7j)</div></div><div class="card-body"><div class="bar-chart" id="nin-chart"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ MISSIONS ══════════════════ -->
+    <div class="page" id="page-missions">
+      <div class="page-header au"><div><div class="page-h1" data-i18n="pt_missions">Contrôle Missions 📋</div><div class="page-sub" data-i18n="pt_missions_sub">15 472 missions au total · 847 actives</div></div><button class="btn btn-primary" onclick="toast('📤 Export')">Exporter</button></div>
+      <div class="kpi-grid au1">
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--b100)">🔄</div><span class="kpi-trend neutral">Aujourd'hui</span></div><div class="kpi-val">847</div><div class="kpi-label" data-i18n="kpi_active_miss">Missions actives</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--gl)">✅</div><span class="kpi-trend up">↑ +47</span></div><div class="kpi-val">142</div><div class="kpi-label" data-i18n="kpi_done_today">Terminées aujourd'hui</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--rl)">⚠️</div></div><div class="kpi-val">3</div><div class="kpi-label" data-i18n="kpi_litige">En litige</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--gol)">⏳</div></div><div class="kpi-val">52</div><div class="kpi-label" data-i18n="kpi_dispatch">En dispatch (non assignées)</div></div>
+      </div>
+      <div class="filter-bar au2">
+        <input class="input" type="text" placeholder="Rechercher #MW-, artisan, client…">
+        <select class="select"><option>Tous statuts</option><option>✅ Confirmée</option><option>🚗 En route</option><option>🔧 Sur place</option><option>✓ Terminée</option><option>⚠️ Litige</option></select>
+        <select class="select"><option>Toutes wilayas</option><option>Alger</option><option>Oran</option></select>
+        <select class="select"><option>Tous métiers</option><option>Plomberie</option><option>Électricité</option><option>Peinture</option></select>
+      </div>
+      <div class="card au3">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th data-i18n="th_mission">#Mission</th><th>Client</th><th>Artisan</th><th>Métier</th><th>Wilaya</th><th data-i18n="th_amount">Montant</th><th data-i18n="th_commission">Commission</th><th>Statut</th><th>SafePay</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td style="font-family:'Sora',sans-serif;font-weight:700;color:var(--b500)">#MW-4821</td><td class="name">Youssef O.</td><td class="name">Karim P.</td><td>🔧 Plomberie</td><td>Alger</td><td>9 500 DZD</td><td style="color:var(--gn)">950 DZD</td><td><span class="badge badge-blue">🔧 Sur place</span></td><td><span class="badge badge-orange">⏳ Escrow</span></td><td><div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="openMissionModal()">Détails</button><button class="btn btn-green btn-sm" onclick="toast('✅ Mission forcée terminée')">Forcer fin</button></div></td></tr>
+              <tr><td style="font-family:'Sora',sans-serif;font-weight:700;color:var(--b500)">#MW-4819</td><td class="name">Samira A.</td><td class="name">Fatima A.</td><td>🎨 Peinture</td><td>Alger</td><td>35 000 DZD</td><td style="color:var(--gn)">3 500 DZD</td><td><span class="badge badge-green">✅ Terminée</span></td><td><span class="badge badge-orange">⏳ Escrow</span></td><td><div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="openMissionModal()">Détails</button><button class="btn btn-primary btn-sm" onclick="toast('💰 SafePay libéré !')">Libérer</button></div></td></tr>
+              <tr style="background:var(--rl)"><td style="font-family:'Sora',sans-serif;font-weight:700;color:var(--rd)">#MW-4799</td><td class="name">Ahmed B.</td><td class="name">Omar F.</td><td>🧱 Maçonnerie</td><td>Constantine</td><td>42 000 DZD</td><td style="color:var(--gn)">4 200 DZD</td><td><span class="badge badge-red">⚠️ Litige</span></td><td><span class="badge badge-red">🔒 Bloqué</span></td><td><div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="goPage('disputes',null)">Litige →</button></div></td></tr>
+              <tr><td style="font-family:'Sora',sans-serif;font-weight:700;color:var(--or)">#MW-4790</td><td class="name">Meriem K.</td><td style="color:var(--text3);font-style:italic">En dispatch</td><td>🏠 Carrelage</td><td>Oran</td><td>18 500 DZD</td><td>—</td><td><span class="badge badge-orange">⏳ En dispatch</span></td><td><span class="badge badge-gray">En attente</span></td><td><div class="btn-row"><button class="btn btn-primary btn-sm" onclick="toast('🔧 Artisan assigné manuellement')">Assigner</button><button class="btn btn-ghost btn-sm" onclick="openMissionModal()">Détails</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ FINANCE ══════════════════ -->
+    <div class="page" id="page-finance">
+      <div class="page-header au"><div><div class="page-h1" data-i18n="pt_finance">Finance &amp; SafePay 💰</div><div class="page-sub" data-i18n="pt_finance_sub">Gestion des paiements, escrow et Maawa Coins</div></div></div>
+      <div class="kpi-grid au1">
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--gl)">💰</div><span class="kpi-trend up">↑ +12%</span></div><div class="kpi-val">847K</div><div class="kpi-label" data-i18n="kpi_escrow_active">DZD en escrow actif</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--b100)">🪙</div><span class="kpi-trend up">↑ +8%</span></div><div class="kpi-val">124K MC</div><div class="kpi-label" data-i18n="kpi_coins_circ">Coins en circulation</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--pl)">📊</div><span class="kpi-trend up">↑ +18%</span></div><div class="kpi-val">424K</div><div class="kpi-label" data-i18n="kpi_commissions">DZD commissions ce mois</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:var(--gol)">⏳</div></div><div class="kpi-val">6</div><div class="kpi-label" data-i18n="kpi_payout_pending">Demandes de paiement en attente</div></div>
+      </div>
+      <div class="grid-2 au2">
+        <!-- PAYOUT REQUESTS -->
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="payout_requests">Demandes de paiement artisans</div><span class="badge badge-orange">6 en attente</span></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Artisan</th><th>Montant</th><th data-i18n="th_method">Méthode</th><th>Statut</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td class="name"><div style="display:flex;align-items:center;gap:7px"><div class="avatar av1">KP</div>Karim P.</div></td><td style="font-weight:700">84 500 DZD</td><td>CCP</td><td><span class="badge badge-orange">⏳ En attente</span></td><td><div class="btn-row"><button class="btn btn-green btn-sm" onclick="toast('✅ Paiement approuvé !')">Approuver</button><button class="btn btn-ghost btn-sm" onclick="toast('⏳ Reporté')">Reporter</button></div></td></tr>
+                <tr><td class="name"><div style="display:flex;align-items:center;gap:7px"><div class="avatar av3">FA</div>Fatima A.</div></td><td style="font-weight:700">72 200 DZD</td><td>Virement</td><td><span class="badge badge-orange">⏳ En attente</span></td><td><div class="btn-row"><button class="btn btn-green btn-sm" onclick="toast('✅ Paiement approuvé !')">Approuver</button><button class="btn btn-ghost btn-sm" onclick="toast('⏳ Reporté')">Reporter</button></div></td></tr>
+                <tr><td class="name"><div style="display:flex;align-items:center;gap:7px"><div class="avatar av2">RB</div>Riad B.</div></td><td style="font-weight:700">61 800 DZD</td><td>CCP</td><td><span class="badge badge-green">✓ Traité</span></td><td><button class="btn btn-ghost btn-sm" onclick="toast('📄 Reçu')">Reçu</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- COIN TRANSACTIONS -->
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="coin_transactions">Transactions Maawa Coins</div><span style="font-size:.76rem;color:var(--b500);font-weight:600" data-i18n="coin_rate">Taux : 1 MC = 50 DZD</span></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Utilisateur</th><th data-i18n="th_operation">Opération</th><th>MC</th><th>DZD</th><th data-i18n="th_hour">Heure</th></tr></thead>
+              <tbody>
+                <tr><td class="name">Youssef O.</td><td><span class="badge badge-blue">Achat</span></td><td style="color:var(--gn);font-weight:700">+200 MC</td><td>10 000</td><td style="color:var(--text3)">14:32</td></tr>
+                <tr><td class="name">Karim P.</td><td><span class="badge badge-purple">Boost profil</span></td><td style="color:var(--rd);font-weight:700">-50 MC</td><td>2 500</td><td style="color:var(--text3)">13:15</td></tr>
+                <tr><td class="name">Ahmed B.</td><td><span class="badge badge-blue">Achat</span></td><td style="color:var(--gn);font-weight:700">+500 MC</td><td>25 000</td><td style="color:var(--text3)">12:44</td></tr>
+                <tr><td class="name">Fatima A.</td><td><span class="badge badge-green">Mission</span></td><td style="color:var(--gn);font-weight:700">+90 MC</td><td>4 500</td><td style="color:var(--text3)">11:20</td></tr>
+                <tr><td class="name">Meriem K.</td><td><span class="badge badge-orange">Fidélité</span></td><td style="color:var(--gn);font-weight:700">+30 MC</td><td>1 500</td><td style="color:var(--text3)">09:00</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ DISPUTES ══════════════════ -->
+    <div class="page" id="page-disputes">
+      <div class="page-header au"><div><div class="page-h1" data-i18n="pt_disputes">Résolution Litiges ⚖️</div><div class="page-sub" data-i18n="pt_disputes_sub">3 litiges actifs · 2 en médiation · 1 escaladé</div></div></div>
+      <div class="stat-row au1">
+        <div class="stat-mini"><div class="stat-mini-v" style="color:var(--rd)">3</div><div class="stat-mini-l">Ouverts</div></div>
+        <div class="stat-mini"><div class="stat-mini-v" style="color:var(--or)">2</div><div class="stat-mini-l">En médiation</div></div>
+        <div class="stat-mini"><div class="stat-mini-v" style="color:var(--pu)">1</div><div class="stat-mini-l">Escaladé légal</div></div>
+        <div class="stat-mini"><div class="stat-mini-v" style="color:var(--gn)">48h</div><div class="stat-mini-l">Délai moyen résolution</div></div>
+        <div class="stat-mini"><div class="stat-mini-v" style="color:var(--gn)">87%</div><div class="stat-mini-l">Taux résolution amiable</div></div>
+      </div>
+      <div class="grid-2 au2">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Litiges actifs</div></div>
+          <div>
+            <div class="activity-item" style="padding:14px 18px;cursor:pointer;background:var(--rl)" onclick="openDisputeModal('#D-2041','Légal')"><div class="activity-icon" style="background:var(--rd);color:#fff;font-size:.75rem">⚖️</div><div class="activity-content"><div class="activity-text"><strong>#D-2041</strong> · Mission #MW-4799 · 42 000 DZD bloqué</div><div class="activity-text" style="font-size:.76rem;color:var(--text2)">Client : Ahmed B. ↔ Artisan : Omar F.</div><div class="activity-time">Ouvert il y a 2j · Escaladé au légal</div></div><span class="badge badge-red">Urgence</span></div>
+            <div class="activity-item" style="padding:14px 18px;cursor:pointer" onclick="openDisputeModal('#D-2038','Médiation')"><div class="activity-icon" style="background:var(--or);color:#fff;font-size:.75rem">⚖️</div><div class="activity-content"><div class="activity-text"><strong>#D-2038</strong> · Mission #MW-4771 · 18 500 DZD bloqué</div><div class="activity-text" style="font-size:.76rem;color:var(--text2)">Client : Nadia K. ↔ Artisan : Sofiane M.</div><div class="activity-time">Ouvert il y a 5j · En médiation</div></div><span class="badge badge-orange">Médiation</span></div>
+            <div class="activity-item" style="padding:14px 18px;cursor:pointer" onclick="openDisputeModal('#D-2035','Médiation')"><div class="activity-icon" style="background:var(--go);color:#fff;font-size:.75rem">⚖️</div><div class="activity-content"><div class="activity-text"><strong>#D-2035</strong> · Mission #MW-4732 · 9 000 DZD bloqué</div><div class="activity-text" style="font-size:.76rem;color:var(--text2)">Client : Meriem H. ↔ Artisan : Riad B.</div><div class="activity-time">Ouvert il y a 8j · En médiation</div></div><span class="badge badge-orange">Médiation</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Historique des 30 derniers jours</div></div>
+          <div class="card-body">
+            <div class="mini-bar-row"><div class="mini-bar-label">Résolus client</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:45%;background:var(--b500)"></div></div><div class="mini-bar-val">18</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">Résolus artisan</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:38%;background:var(--gn)"></div></div><div class="mini-bar-val">15</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">Partagés 50/50</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:27%;background:var(--or)"></div></div><div class="mini-bar-val">11</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">Remboursements</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:15%;background:var(--rd)"></div></div><div class="mini-bar-val">6</div></div>
+            <div class="mini-bar-row"><div class="mini-bar-label">Légaux</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:5%;background:var(--pu)"></div></div><div class="mini-bar-val">2</div></div>
+            <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:.75rem;color:var(--text3);margin-bottom:3px">Montants remboursés ce mois</div><div style="font-family:'Sora',sans-serif;font-weight:700;font-size:1.1rem;color:var(--rd)">- 147 500 DZD</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ MODERATION ══════════════════ -->
+    <div class="page" id="page-moderation">
+      <div class="page-header au"><div><div class="page-h1" data-i18n="pt_moderation">Modération Contenu 🛡️</div><div class="page-sub" data-i18n="pt_moderation_sub">12 éléments signalés · 3 à traiter en urgence</div></div></div>
+      <div class="tabs au1">
+        <div class="tab on" onclick="setTab(this,'mod-all')">Tous (12)</div>
+        <div class="tab" onclick="setTab(this,'mod-posts')">Posts (7)</div>
+        <div class="tab" onclick="setTab(this,'mod-reels')">Reels (3)</div>
+        <div class="tab" onclick="setTab(this,'mod-profiles')">Profils (2)</div>
+      </div>
+      <div class="card au2">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Type</th><th>Auteur</th><th data-i18n="th_reporter">Signalé par</th><th data-i18n="th_reason">Raison</th><th data-i18n="th_ai_score">Score IA</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr style="background:var(--rl)"><td><span class="badge badge-red">📹 Reel</span></td><td class="name">@sofiane.m</td><td>3 utilisateurs</td><td>Contenu trompeur</td><td><span class="badge badge-red">⚠️ 85%</span></td><td style="color:var(--text3)">Il y a 18 min</td><td><div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="toast('👁️ Aperçu du contenu')">Voir</button><button class="btn btn-red btn-sm" onclick="toast('🗑️ Contenu supprimé')">Supprimer</button><button class="btn btn-orange btn-sm" onclick="toast('⚠️ Avertissement envoyé')">Avertir</button></div></td></tr>
+              <tr><td><span class="badge badge-blue">📝 Post</span></td><td class="name">@karim.plomb</td><td>1 utilisateur</td><td>Spam</td><td><span class="badge badge-orange">⚡ 42%</span></td><td style="color:var(--text3)">Il y a 2h</td><td><div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="toast('👁️ Aperçu')">Voir</button><button class="btn btn-green btn-sm" onclick="toast('✅ Signalement ignoré')">Ignorer</button><button class="btn btn-red btn-sm" onclick="toast('🗑️ Supprimé')">Supprimer</button></div></td></tr>
+              <tr><td><span class="badge badge-purple">👤 Profil</span></td><td class="name">@unknown123</td><td>5 utilisateurs</td><td>Faux profil</td><td><span class="badge badge-red">⚠️ 91%</span></td><td style="color:var(--text3)">Il y a 4h</td><td><div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="openUserModal('X')">Voir profil</button><button class="btn btn-red btn-sm" onclick="toast('🚫 Compte banni')">Bannir</button></div></td></tr>
+              <tr><td><span class="badge badge-blue">📝 Post</span></td><td class="name">@riad.elec</td><td>1 utilisateur</td><td>Hors-sujet</td><td><span class="badge badge-green">✅ 12%</span></td><td style="color:var(--text3)">Il y a 6h</td><td><div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="toast('👁️ Aperçu')">Voir</button><button class="btn btn-green btn-sm" onclick="toast('✅ Signalement ignoré')">Ignorer</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ BROADCAST ══════════════════ -->
+    <div class="page" id="page-broadcast">
+      <div class="page-header au"><div><div class="page-h1" data-i18n="pt_broadcast">Diffusions &amp; Notifications 📣</div><div class="page-sub" data-i18n="pt_broadcast_sub">Contactez vos utilisateurs par push, SMS ou bannière</div></div></div>
+      <div class="grid-2 au1">
+        <div class="card">
+          <div class="card-header"><div class="card-title">✉️ Nouvelle diffusion</div></div>
+          <div class="card-body">
+            <div class="form-group"><label class="label">Type de message</label><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+              <div id="btype-push" onclick="setBtype('push')" style="padding:10px;border-radius:8px;border:2px solid var(--b500);text-align:center;cursor:pointer;font-size:.78rem;font-weight:600;color:var(--b500);background:var(--b50)">📱 Push</div>
+              <div id="btype-sms" onclick="setBtype('sms')" style="padding:10px;border-radius:8px;border:2px solid var(--border2);text-align:center;cursor:pointer;font-size:.78rem;font-weight:600;color:var(--text2)">💬 SMS</div>
+              <div id="btype-banner" onclick="setBtype('banner')" style="padding:10px;border-radius:8px;border:2px solid var(--border2);text-align:center;cursor:pointer;font-size:.78rem;font-weight:600;color:var(--text2)">🏷️ Bannière</div>
+            </div></div>
+            <div class="form-group"><label class="label">Cible</label><select class="select" style="width:100%"><option>Tous les utilisateurs (47 218)</option><option>Artisans vérifiés (3 841)</option><option>Clients actifs (30j)</option><option>Utilisateurs Alger</option><option>Artisans avec missions en cours</option><option>Utilisateurs avec solde MC &gt; 0</option></select></div>
+            <div class="form-group"><label class="label">Titre de la notification</label><input class="input" type="text" style="width:100%" placeholder="Ex: 🎉 Nouvelle fonctionnalité Maawa !"></div>
+            <div class="form-group"><label class="label">Message</label><textarea class="textarea" placeholder="Rédigez votre message… (max 160 caractères pour SMS)"></textarea></div>
+            <div class="form-row">
+              <div class="form-group" style="margin:0"><label class="label">Programmation</label><select class="select" style="width:100%"><option>Envoyer maintenant</option><option>Programmer</option></select></div>
+              <div class="form-group" style="margin:0"><label class="label">Lien action</label><input class="input" type="text" style="width:100%" placeholder="maawa://explore"></div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px">
+              <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="toast('👁️ Prévisualisation')">Prévisualiser</button>
+              <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="toast('📣 Diffusion envoyée à 47 218 utilisateurs !')">Envoyer</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="broadcast_history">📊 Historique diffusions</div></div>
+          <div class="card-body" style="padding:0">
+            <div class="activity-item" style="padding:12px 18px"><div class="activity-icon" style="background:var(--gl);font-size:.85rem">📱</div><div style="flex:1"><div style="font-size:.8rem;font-weight:600;color:var(--text)">Mise à jour app v2.4.1</div><div style="font-size:.72rem;color:var(--text3)">47 218 envoyés · <strong style="color:var(--gn)">82% ouvert</strong> · il y a 2j</div></div></div>
+            <div class="activity-item" style="padding:12px 18px"><div class="activity-icon" style="background:var(--b100);font-size:.85rem">💬</div><div style="flex:1"><div style="font-size:.8rem;font-weight:600;color:var(--text)">Promo Coins +20% Mars</div><div style="font-size:.72rem;color:var(--text3)">3 841 artisans · <strong style="color:var(--gn)">67% ouvert</strong> · il y a 5j</div></div></div>
+            <div class="activity-item" style="padding:12px 18px"><div class="activity-icon" style="background:var(--gol);font-size:.85rem">🏷️</div><div style="flex:1"><div style="font-size:.8rem;font-weight:600;color:var(--text)">Bannière SafePay amélioré</div><div style="font-size:.72rem;color:var(--text3)">Tous · <strong style="color:var(--gn)">94% vu</strong> · il y a 7j</div></div></div>
+            <div class="activity-item" style="padding:12px 18px"><div class="activity-icon" style="background:var(--pl);font-size:.85rem">📱</div><div style="flex:1"><div style="font-size:.8rem;font-weight:600;color:var(--text)">Rappel vérification NIN</div><div style="font-size:.72rem;color:var(--text3)">Artisans non vérifiés · <strong style="color:var(--gn)">71% cliqué</strong> · il y a 10j</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ SETTINGS ══════════════════ -->
+    <div class="page" id="page-settings">
+      <div class="page-header au"><div><div class="page-h1" data-i18n="pt_settings">Paramètres plateforme ⚙️</div><div class="page-sub" data-i18n="pt_settings_sub">Configuration globale Maawa · Seul le Super Admin peut modifier</div></div><button class="btn btn-primary" onclick="toast('✅ Paramètres sauvegardés !')">Sauvegarder</button></div>
+      <div class="grid-2 au1">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="settings_commission">💰 Taux de commission</div></div>
+            <div class="card-body">
+              <div class="form-group"><label class="label">Commission standard (% du montant mission)</label><div style="display:flex;align-items:center;gap:12px"><input type="range" class="slider" min="5" max="20" value="10" id="comm-slider" oninput="document.getElementById('comm-val').textContent=this.value+'%'"><span id="comm-val" style="font-family:'Sora',sans-serif;font-weight:700;font-size:1rem;color:var(--b500);min-width:40px">10%</span></div></div>
+              <div class="form-group"><label class="label">Commission artisans Premium</label><div style="display:flex;align-items:center;gap:12px"><input type="range" class="slider" min="3" max="15" value="7" oninput="this.nextElementSibling.textContent=this.value+'%'"><span style="font-family:'Sora',sans-serif;font-weight:700;font-size:1rem;color:var(--pu);min-width:40px">7%</span></div></div>
+              <div class="form-group"><label class="label">Taux Maawa Coin</label><div style="display:flex;align-items:center;gap:9px"><input class="input" type="number" value="50" style="width:90px"> <span style="font-size:.8rem;color:var(--text2)">DZD par MC</span></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="settings_features">🔧 Fonctionnalités</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:13px">
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"><div class="toggle-thumb"></div></div><span class="toggle-label" data-i18n="settings_safepay">Maawa SafePay actif</span></label>
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"><div class="toggle-thumb"></div></div><span class="toggle-label" data-i18n="settings_tender">Maawa Tender (appels d'offres)</span></label>
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"><div class="toggle-thumb"></div></div><span class="toggle-label" data-i18n="settings_reels">Reels et stories</span></label>
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"><div class="toggle-thumb"></div></div><span class="toggle-label" data-i18n="settings_coins">Maawa Coins activés</span></label>
+              <label class="toggle"><input type="checkbox"><div class="toggle-track"><div class="toggle-thumb"></div></div><span class="toggle-label" data-i18n="settings_maintenance">Mode maintenance</span></label>
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"><div class="toggle-thumb"></div></div><span class="toggle-label" data-i18n="settings_registrations">Inscriptions ouvertes</span></label>
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"><div class="toggle-thumb"></div></div><span class="toggle-label" data-i18n="settings_nin_required">Vérification NIN obligatoire</span></label>
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"><div class="toggle-thumb"></div></div><span class="toggle-label" data-i18n="settings_ai_fraud">Détection fraude IA active</span></label>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-header"><div class="card-title">🔑 API & Intégrations</div></div>
+            <div class="card-body">
+              <div class="form-group"><label class="label">Chargily Pay (API Key)</label><div style="display:flex;gap:7px"><input class="input" type="password" value="sk_live_XXXXXXXXXX" style="flex:1"><button class="btn btn-ghost btn-sm" onclick="toast('👁️ Clé révélée')">Voir</button></div></div>
+              <div class="form-group"><label class="label">Twilio SMS (Account SID)</label><div style="display:flex;gap:7px"><input class="input" type="password" value="ACxxxxxxxxxx" style="flex:1"><button class="btn btn-ghost btn-sm" onclick="toast('👁️')">Voir</button></div></div>
+              <div class="form-group"><label class="label">Firebase Project ID</label><input class="input" type="text" value="maawa-prod-2026" style="width:100%"></div>
+              <div class="form-group"><label class="label">OpenAI API Key (Smart Quote)</label><div style="display:flex;gap:7px"><input class="input" type="password" value="sk-proj-XXXXXXXXXX" style="flex:1"><button class="btn btn-ghost btn-sm" onclick="toast('👁️')">Voir</button></div></div>
+              <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:4px" onclick="toast('🔄 Connexions testées : Toutes OK ✅')">Tester les connexions</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="settings_security">🛡️ Sécurité</div></div>
+            <div class="card-body">
+              <div class="form-group"><label class="label">Score fraude max. auto-approbation NIN</label><div style="display:flex;align-items:center;gap:12px"><input type="range" class="slider" min="0" max="100" value="30" oninput="this.nextElementSibling.textContent=this.value+'/100'"><span style="font-family:'Sora',sans-serif;font-weight:700;font-size:1rem;color:var(--or);min-width:60px">30/100</span></div></div>
+              <div class="form-group"><label class="label">Délai SLA vérification NIN (heures)</label><input class="input" type="number" value="24" style="width:100px"></div>
+              <div class="form-group" style="display:flex;align-items:center;gap:10px;background:var(--rl);border-radius:var(--rs);padding:10px 12px"><span style="font-size:.85rem">🔴</span><div><div style="font-size:.79rem;font-weight:600;color:var(--rd)">Zone dangereuse</div><div style="font-size:.72rem;color:var(--text2)">Réinitialiser la base de test</div></div><button class="btn btn-red btn-sm" style="margin-left:auto" onclick="toast('⚠️ Action irréversible — Confirmation requise')">Reset Test</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ AUDIT LOG ══════════════════ -->
+    <div class="page" id="page-audit">
+      <div class="page-header au"><div><div class="page-h1" data-i18n="pt_audit">Journal d'audit 📄</div><div class="page-sub" data-i18n="pt_audit_sub">Toutes les actions administratives enregistrées</div></div><button class="btn btn-ghost" onclick="toast('📤 Export CSV')">Exporter</button></div>
+      <div class="filter-bar au1"><input class="input" type="text" placeholder="Rechercher action, admin…" data-i18n-ph="audit_search_ph"><select class="select"><option>Toutes les actions</option><option>Approbation NIN</option><option>Suppression contenu</option><option>Modification paramètres</option><option>Résolution litige</option><option>Suspension compte</option></select><input class="input" type="date" value="2026-03-30"></div>
+      <div class="card au2">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Heure</th><th data-i18n="th_admin">Admin</th><th>Action</th><th data-i18n="th_target">Cible</th><th data-i18n="th_details">Détails</th><th>IP</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--text3);font-size:.76rem;white-space:nowrap">30/03 14:32</td><td class="name"><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:var(--b500);width:22px;height:22px;font-size:.57rem">SA</div>Super Admin</div></td><td><span class="badge badge-green">✅ NIN approuvé</span></td><td>Artisan #A-1847</td><td style="font-size:.76rem;color:var(--text3)">Karim Mabrouk · Score: 8/100</td><td style="font-size:.72rem;color:var(--text3)">196.x.x.x</td></tr>
+              <tr><td style="color:var(--text3);font-size:.76rem;white-space:nowrap">30/03 13:15</td><td class="name"><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:var(--pu);width:22px;height:22px;font-size:.57rem">MA</div>Mod. Ahmed</div></td><td><span class="badge badge-red">🗑️ Contenu supprimé</span></td><td>Post #P-9921</td><td style="font-size:.76rem;color:var(--text3)">Contenu trompeur · @user123</td><td style="font-size:.72rem;color:var(--text3)">196.x.x.x</td></tr>
+              <tr><td style="color:var(--text3);font-size:.76rem;white-space:nowrap">30/03 11:44</td><td class="name"><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:var(--b500);width:22px;height:22px;font-size:.57rem">SA</div>Super Admin</div></td><td><span class="badge badge-orange">⚙️ Paramètre modifié</span></td><td>Commission</td><td style="font-size:.76rem;color:var(--text3)">8% → 10% · Catégorie standard</td><td style="font-size:.72rem;color:var(--text3)">196.x.x.x</td></tr>
+              <tr><td style="color:var(--text3);font-size:.76rem;white-space:nowrap">30/03 09:30</td><td class="name"><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:var(--b500);width:22px;height:22px;font-size:.57rem">SA</div>Super Admin</div></td><td><span class="badge badge-blue">💰 SafePay libéré</span></td><td>Mission #MW-4815</td><td style="font-size:.76rem;color:var(--text3)">18 000 DZD → Artisan Riad B.</td><td style="font-size:.72rem;color:var(--text3)">196.x.x.x</td></tr>
+              <tr><td style="color:var(--text3);font-size:.76rem;white-space:nowrap">29/03 17:22</td><td class="name"><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:var(--pu);width:22px;height:22px;font-size:.57rem">MA</div>Mod. Ahmed</div></td><td><span class="badge badge-orange">⚠️ Compte suspendu</span></td><td>User #C-4412</td><td style="font-size:.76rem;color:var(--text3)">48h · Comportement abusif</td><td style="font-size:.72rem;color:var(--text3)">196.x.x.x</td></tr>
+              <tr><td style="color:var(--text3);font-size:.76rem;white-space:nowrap">29/03 16:05</td><td class="name"><div style="display:flex;align-items:center;gap:6px"><div class="avatar" style="background:var(--b500);width:22px;height:22px;font-size:.57rem">SA</div>Super Admin</div></td><td><span class="badge badge-purple">📣 Diffusion envoyée</span></td><td>Tous (47 218)</td><td style="font-size:.76rem;color:var(--text3)">Push: "Mise à jour v2.4.1"</td><td style="font-size:.72rem;color:var(--text3)">196.x.x.x</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" style="padding:10px 16px">
+          <button class="pg-btn">‹</button>
+          <button class="pg-btn on">1</button>
+          <button class="pg-btn">2</button>
+          <button class="pg-btn">…</button>
+          <button class="pg-btn">847</button>
+          <button class="pg-btn">›</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main-wrap -->
+
+<!-- ════════ MODALS ════════ -->
+
+<!-- USER MODAL -->
+<div class="modal-bg" id="user-modal">
+  <div class="modal">
+    <div class="modal-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--b500)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span id="modal-user-title">Profil Utilisateur</span><button class="modal-close" onclick="closeModal('user-modal')">✕</button></div>
+    <div style="display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap">
+      <div class="avatar" id="modal-user-av" style="width:56px;height:56px;font-size:.9rem;flex-shrink:0">KP</div>
+      <div style="flex:1">
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1rem;color:var(--text)" id="modal-user-name">Karim Plombier</div>
+        <div style="font-size:.8rem;color:var(--text2);margin-top:2px" id="modal-user-email">karim.p@gmail.com · #A-1042</div>
+        <div style="display:flex;gap:5px;margin-top:6px"><span class="badge badge-green">✓ NIN Vérifié</span><span class="badge badge-green">● Actif</span><span class="badge badge-blue">🔧 Artisan</span></div>
+      </div>
+    </div>
+    <div class="stat-row" style="margin-bottom:14px">
+      <div class="stat-mini"><div class="stat-mini-v">137</div><div class="stat-mini-l">Missions</div></div>
+      <div class="stat-mini"><div class="stat-mini-v" style="color:var(--go)">4.9★</div><div class="stat-mini-l">Note</div></div>
+      <div class="stat-mini"><div class="stat-mini-v" style="color:var(--b500)">350 MC</div><div class="stat-mini-l">Coins</div></div>
+      <div class="stat-mini"><div class="stat-mini-v">12</div><div class="stat-mini-l">Ans exp.</div></div>
+    </div>
+    <div class="form-row">
+      <div><div class="label" data-i18n="user_joined">Inscrit le</div><div style="font-size:.82rem;color:var(--text2)">12 janvier 2024</div></div>
+      <div><div class="label" data-i18n="user_last_login">Dernière connexion</div><div style="font-size:.82rem;color:var(--text2)">Aujourd'hui 14:21</div></div>
+    </div>
+    <div class="form-group"><label class="label">Note interne</label><textarea class="textarea" placeholder="Note visible seulement par les admins…" data-i18n-ph="user_modal_note_ph"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('user-modal')">Fermer</button>
+      <button class="btn btn-orange" onclick="toast('⚠️ Compte suspendu 24h');closeModal('user-modal')">Suspendre 24h</button>
+      <button class="btn btn-red" onclick="toast('🚫 Compte banni');closeModal('user-modal')">Bannir</button>
+      <button class="btn btn-primary" onclick="toast('✉️ Email envoyé');closeModal('user-modal')">Contacter</button>
+    </div>
+  </div>
+</div>
+
+<!-- NIN MODAL -->
+<div class="modal-bg" id="nin-modal">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--b500)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span id="nin-modal-title">Vérification NIN — Yacine Mabrouk</span><button class="modal-close" onclick="closeModal('nin-modal')">✕</button></div>
+    <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+      <div><div class="label">Métier déclaré</div><div style="font-size:.84rem;font-weight:600;color:var(--text)" id="nin-trade">⚡ Électricien · Tizi Ouzou</div></div>
+      <div><div class="label">Score fraude IA</div><div id="nin-score-val" style="font-size:.84rem;font-weight:700;color:var(--gn)">8 / 100 ✅ Faible risque</div></div>
+      <div><div class="label">Numéro NIN</div><div style="font-size:.84rem;font-weight:600;color:var(--text)">19XX XXXX XXXX XX</div></div>
+    </div>
+    <div class="score-bar"><div class="label" style="min-width:100px">Risque fraude</div><div class="score-track"><div class="score-fill" id="nin-score-bar" style="width:8%;background:var(--gn)"></div></div><div id="nin-score-num" style="font-size:.78rem;font-weight:700;color:var(--gn);min-width:50px;text-align:right">8%</div></div>
+    <div class="doc-viewer">
+      <div class="doc-box" onclick="toast('🔍 CNI Recto en plein écran')"><div class="doc-emoji">📄</div><div class="doc-lbl">CNI RECTO</div><div style="font-size:.65rem;color:var(--text3)">Cliquer pour agrandir</div></div>
+      <div class="doc-box" onclick="toast('🔍 CNI Verso en plein écran')"><div class="doc-emoji">📄</div><div class="doc-lbl">CNI VERSO</div><div style="font-size:.65rem;color:var(--text3)">Cliquer pour agrandir</div></div>
+      <div class="doc-box" onclick="toast('🔍 Selfie en plein écran')"><div class="doc-emoji">🤳</div><div class="doc-lbl">SELFIE</div><div style="font-size:.65rem;color:var(--text3)">Cliquer pour agrandir</div></div>
+      <div class="doc-box" style="background:var(--gl);border-color:var(--gn)"><div style="font-size:1.2rem">✅</div><div class="doc-lbl" style="color:var(--gn)">CORRESPONDANCE</div><div style="font-size:.65rem;color:var(--gn);font-weight:600">Visage détecté · 92%</div></div>
+    </div>
+    <div class="form-group"><label class="label">Raison du rejet (optionnel)</label><select class="select" style="width:100%"><option value="">— Sélectionner une raison —</option><option>Documents illisibles</option><option>NIN non correspondant</option><option>Selfie non conforme</option><option>Documents expirés</option><option>Suspicion de fraude</option></select></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('nin-modal')">Annuler</button>
+      <button class="btn btn-red" onclick="toast('❌ NIN Rejeté — Email envoyé à l\'artisan');closeModal('nin-modal')">Rejeter</button>
+      <button class="btn btn-orange" onclick="toast('📋 Dossier transféré en vérification manuelle');closeModal('nin-modal')">Vérif. manuelle</button>
+      <button class="btn btn-green" onclick="toast('✅ NIN Approuvé ! Artisan notifié 🎉');closeModal('nin-modal')">Approuver ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- MISSION MODAL -->
+<div class="modal-bg" id="mission-modal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-title">📋 Mission #MW-4821<button class="modal-close" onclick="closeModal('mission-modal')">✕</button></div>
+    <div class="stat-row" style="margin-bottom:14px">
+      <div class="stat-mini"><div class="stat-mini-v" style="color:var(--b500)">9 500</div><div class="stat-mini-l">DZD Total</div></div>
+      <div class="stat-mini"><div class="stat-mini-v" style="color:var(--gn)">950</div><div class="stat-mini-l">DZD Commission</div></div>
+      <div class="stat-mini"><div class="stat-mini-v" style="color:var(--or)">8 550</div><div class="stat-mini-l">DZD Artisan</div></div>
+    </div>
+    <div class="form-row">
+      <div><div class="label">Client</div><div style="display:flex;align-items:center;gap:7px;margin-top:4px"><div class="avatar av4" style="width:26px;height:26px;font-size:.62rem">YO</div><div><div style="font-size:.82rem;font-weight:600;color:var(--text)">Youssef Omar</div><div style="font-size:.69rem;color:var(--text3)">#C-8812</div></div></div></div>
+      <div><div class="label">Artisan</div><div style="display:flex;align-items:center;gap:7px;margin-top:4px"><div class="avatar av1" style="width:26px;height:26px;font-size:.62rem">KP</div><div><div style="font-size:.82rem;font-weight:600;color:var(--text)">Karim Plombier</div><div style="font-size:.69rem;color:var(--text3)">#A-1042</div></div></div></div>
+    </div>
+    <div style="background:var(--surface2);border-radius:var(--rs);padding:12px;margin:12px 0;border:1px solid var(--border)">
+      <div class="label">Description de la mission</div>
+      <div style="font-size:.82rem;color:var(--text2);line-height:1.65;margin-top:4px">Réparation fuite salle de bain · F4 · 3ème étage · Bab Ezzouar, Alger. Fuite sous lavabo + remplacement joint mitigeur.</div>
+    </div>
+    <div class="form-row">
+      <div><div class="label">Créée le</div><div style="font-size:.82rem;color:var(--text2)">24/03/2026 à 14:15</div></div>
+      <div><div class="label">Statut actuel</div><span class="badge badge-blue" style="margin-top:4px">🔧 Sur place</span></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('mission-modal')">Fermer</button>
+      <button class="btn btn-orange" onclick="toast('⚠️ Litige ouvert sur cette mission');closeModal('mission-modal')">Ouvrir litige</button>
+      <button class="btn btn-red" onclick="toast('❌ Mission annulée — Remboursement initié');closeModal('mission-modal')">Annuler & Rembourser</button>
+      <button class="btn btn-green" onclick="toast('✅ Mission marquée terminée — SafePay libéré');closeModal('mission-modal')">Forcer fin & Libérer</button>
+    </div>
+  </div>
+</div>
+
+<!-- DISPUTE MODAL -->
+<div class="modal-bg" id="dispute-modal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--rd)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span id="dispute-title">Litige #D-2041</span><button class="modal-close" onclick="closeModal('dispute-modal')">✕</button></div>
+    <div style="background:var(--rl);border-radius:var(--rs);padding:11px 13px;margin-bottom:14px;border-left:3px solid var(--rd)"><div style="font-size:.79rem;font-weight:600;color:var(--rd)">⚠️ Escaladé au niveau légal</div><div style="font-size:.74rem;color:var(--text2);margin-top:3px">Mission #MW-4799 · 42 000 DZD bloqué en escrow · Ouvert il y a 2 jours</div></div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div style="background:var(--surface2);border-radius:var(--rs);padding:11px;border:1px solid var(--border)"><div class="label" style="color:var(--b500)">🧑 Client</div><div style="font-size:.82rem;font-weight:600;color:var(--text)">Ahmed Benali</div><div style="font-size:.76rem;color:var(--text3);margin-top:4px;line-height:1.5">"Le maçon n'a pas fini les travaux, il manque l'enduit sur un mur entier. Refus de revenir."</div></div>
+      <div style="background:var(--surface2);border-radius:var(--rs);padding:11px;border:1px solid var(--border)"><div class="label" style="color:var(--or)">🔧 Artisan</div><div style="font-size:.82rem;font-weight:600;color:var(--text)">Omar Farhat</div><div style="font-size:.76rem;color:var(--text3);margin-top:4px;line-height:1.5">"Les travaux sont terminés comme demandé. Le client change ses exigences en cours de route."</div></div>
+    </div>
+    <div class="form-group"><label class="label" data-i18n="dispute_mediator_decision">Décision du médiateur</label><select class="select" style="width:100%" onchange="updateDisputeAmount(this.value)"><option value="">— Choisir une résolution —</option><option value="full_client" data-i18n="dispute_full_client">Remboursement total → Client</option><option value="full_artisan" data-i18n="dispute_full_artisan">Paiement total → Artisan</option><option value="split" data-i18n="dispute_split">Partage 50/50</option><option value="custom" data-i18n="dispute_custom">Montant personnalisé</option><option value="legal" data-i18n="dispute_legal">Escalader au légal</option></select></div>
+    <div id="custom-amount" style="display:none" class="form-group"><label class="label" data-i18n="dispute_custom_amount">Montant artisan (DZD)</label><input class="input" type="number" value="21000" style="width:180px"> <span style="font-size:.78rem;color:var(--text3);margin-left:8px">/ 42 000 DZD total</span></div>
+    <div class="form-group"><label class="label" data-i18n="dispute_note">Note de médiation (interne)</label><textarea class="textarea" placeholder="Expliquer la décision pour l'historique…"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('dispute-modal')">Annuler</button>
+      <button class="btn btn-primary" onclick="toast('⚖️ Décision appliquée — Les deux parties notifiées');closeModal('dispute-modal')">Appliquer la décision</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+</div><!-- /admin-wrap -->
+
+<script>
+
+/* ════════════════════════════════════════
+   i18n — EN / FR / AR
+════════════════════════════════════════ */
+let currentLang = 'fr';
+
+const T = {
+fr: {
+  /* App title */
+  app_title: 'Maawa Admin',
+  app_badge: 'BETA',
+  /* Sidebar sections */
+  nav_principal: 'Principal',
+  nav_users_sct: 'Utilisateurs',
+  nav_ops: 'Opérations',
+  nav_content: 'Contenu',
+  nav_system: 'Système',
+  /* Nav items */
+  nav_dashboard: 'Dashboard',
+  nav_analytics: 'Analytics',
+  nav_users: 'Utilisateurs',
+  nav_verification: 'Vérification NIN',
+  nav_missions: 'Missions',
+  nav_finance: 'Finance & SafePay',
+  nav_disputes: 'Litiges',
+  nav_moderation: 'Modération',
+  nav_broadcast: 'Diffusions',
+  nav_settings: 'Paramètres',
+  nav_audit: "Journal d'audit",
+  /* Topbar */
+  search_ph: 'Rechercher utilisateur, mission, #ID…',
+  /* Page titles */
+  pt_dashboard: "Vue d'ensemble 📊",
+  pt_dashboard_sub: 'Mars 2026 · Mis à jour il y a 2 min',
+  pt_analytics: 'Analytics 📈',
+  pt_analytics_sub: 'Métriques de croissance et performance',
+  pt_users: 'Gestion Utilisateurs 👥',
+  pt_users_sub: '47 218 utilisateurs · 3 841 artisans vérifiés',
+  pt_verification: 'Vérification NIN 🪪',
+  pt_verification_sub: '7 dossiers en attente · SLA 24h',
+  pt_missions: 'Contrôle Missions 📋',
+  pt_missions_sub: '15 472 missions au total · 847 actives',
+  pt_finance: 'Finance & SafePay 💰',
+  pt_finance_sub: 'Gestion des paiements, escrow et Maawa Coins',
+  pt_disputes: 'Résolution Litiges ⚖️',
+  pt_disputes_sub: '3 litiges actifs · 2 en médiation · 1 escaladé',
+  pt_moderation: 'Modération Contenu 🛡️',
+  pt_moderation_sub: '12 éléments signalés · 3 à traiter en urgence',
+  pt_broadcast: 'Diffusions & Notifications 📣',
+  pt_broadcast_sub: 'Contactez vos utilisateurs par push, SMS ou bannière',
+  pt_settings: 'Paramètres plateforme ⚙️',
+  pt_settings_sub: 'Configuration globale Maawa · Seul le Super Admin peut modifier',
+  pt_audit: "Journal d'audit 📄",
+  pt_audit_sub: 'Toutes les actions administratives enregistrées',
+  /* Buttons */
+  btn_export: 'Exporter',
+  btn_export_pdf: 'Exporter PDF',
+  btn_save: 'Sauvegarder',
+  btn_send: 'Envoyer',
+  btn_approve: 'Approuver ✓',
+  btn_reject: 'Rejeter',
+  btn_ban: 'Bannir',
+  btn_suspend: 'Suspendre 24h',
+  btn_contact: 'Contacter',
+  btn_close: 'Fermer',
+  btn_cancel: 'Annuler',
+  btn_see: 'Voir',
+  btn_details: 'Détails',
+  btn_assign: 'Assigner',
+  btn_force_done: 'Forcer fin',
+  btn_release: 'Libérer',
+  btn_preview: 'Prévisualiser',
+  btn_apply: 'Appliquer la décision',
+  btn_force_release: 'Forcer fin & Libérer',
+  btn_cancel_refund: 'Annuler & Rembourser',
+  btn_open_dispute: 'Ouvrir litige',
+  btn_read_all: 'Tout lire',
+  btn_test_connections: 'Tester les connexions',
+  btn_manual_verify: 'Vérif. manuelle',
+  btn_ignore: 'Ignorer',
+  btn_warn: 'Avertir',
+  btn_delete: 'Supprimer',
+  btn_reactivate: 'Réactiver',
+  btn_receipt: 'Reçu',
+  btn_delay: 'Reporter',
+  /* KPI labels */
+  kpi_revenue: "Chiffre d'affaires (DZD)",
+  kpi_missions: 'Missions terminées ce mois',
+  kpi_users: 'Utilisateurs actifs',
+  kpi_coins: 'Maawa Coins en circulation',
+  kpi_artisans: 'Artisans vérifiés',
+  kpi_satisfaction: 'Taux satisfaction',
+  kpi_disputes: 'Litiges ouverts',
+  kpi_nin_pending: 'NIN en attente',
+  kpi_flagged: 'Contenus signalés',
+  kpi_escrow: 'DZD SafePay escrow',
+  kpi_active_miss: 'Missions actives',
+  kpi_done_today: "Terminées aujourd'hui",
+  kpi_litige: 'En litige',
+  kpi_dispatch: 'En dispatch (non assignées)',
+  kpi_escrow_active: 'DZD en escrow actif',
+  kpi_coins_circ: 'Coins en circulation',
+  kpi_commissions: 'DZD commissions ce mois',
+  kpi_payout_pending: 'Demandes de paiement en attente',
+  /* Dashboard */
+  alert_disputes: '3 litiges actifs nécessitent une intervention immédiate',
+  alert_nin: '7 vérifications NIN en attente depuis plus de 24h (SLA dépassé)',
+  section_alerts: 'Alertes actives',
+  revenue_chart_title: 'Revenus journaliers (DZD)',
+  this_week: 'Cette semaine',
+  last_week: 'Semaine passée',
+  missions_status: 'Statut Missions',
+  top_wilayas: '🗺️ Top Wilayas — Activité',
+  see_all: 'Voir tout →',
+  activity_live: '⚡ Activité temps réel',
+  top_artisans: '⭐ Top Artisans — Ce mois',
+  /* Table headers */
+  th_user: 'Utilisateur',
+  th_type: 'Type',
+  th_wilaya: 'Wilaya',
+  th_joined: 'Inscrit le',
+  th_missions: 'Missions',
+  th_nin_status: 'Statut NIN',
+  th_account_status: 'Statut compte',
+  th_actions: 'Actions',
+  th_mission: '#Mission',
+  th_client: 'Client',
+  th_artisan: 'Artisan',
+  th_trade: 'Métier',
+  th_amount: 'Montant',
+  th_commission: 'Commission',
+  th_status: 'Statut',
+  th_safepay: 'SafePay',
+  th_reason: 'Raison',
+  th_ai_score: 'Score IA',
+  th_date: 'Date',
+  th_admin: 'Admin',
+  th_action: 'Action',
+  th_target: 'Cible',
+  th_details: 'Détails',
+  th_ip: 'IP',
+  th_artisan_col: 'Artisan',
+  th_method: 'Méthode',
+  th_operation: 'Opération',
+  th_hour: 'Heure',
+  th_dzd: 'DZD',
+  th_reporter: 'Signalé par',
+  /* Badges */
+  badge_active: '● Actif',
+  badge_suspended: '⊘ Suspendu',
+  badge_banned: '⊗ Banni',
+  badge_verified: '✓ Vérifié',
+  badge_pending: '⚠️ En attente',
+  badge_in_progress: '🔧 Sur place',
+  badge_done: '✅ Terminée',
+  badge_dispute: '⚠️ Litige',
+  badge_escrow: '⏳ Escrow',
+  badge_blocked: '🔒 Bloqué',
+  badge_dispatch: '⏳ En dispatch',
+  badge_live: 'Live',
+  badge_urgence: 'Urgence',
+  badge_mediation: 'Médiation',
+  badge_high_risk: 'Risque élevé',
+  badge_treated: '✓ Traité',
+  /* Filters */
+  filter_all_wilayas: 'Toutes les wilayas',
+  filter_all_status: 'Tous les statuts',
+  filter_sort: 'Trier par : Date inscription',
+  filter_all_users: 'Tous (47 218)',
+  filter_artisans: 'Artisans (3 841)',
+  filter_clients: 'Clients (43 377)',
+  filter_suspended: 'Suspendus (142)',
+  filter_all_missions: 'Tous statuts',
+  filter_all_trades: 'Tous métiers',
+  /* NIN */
+  nin_queue: "File d'attente",
+  nin_stats_today: 'Statistiques du jour',
+  nin_approved: 'Approuvés',
+  nin_rejected: 'Rejetés',
+  nin_pending: 'En attente',
+  nin_avg_time: 'Temps moyen de traitement',
+  nin_approval_rate: "Taux d'approbation (7j)",
+  nin_fraud_score: 'Score fraude IA',
+  nin_docs: 'Documents joints',
+  nin_reject_reason: 'Raison du rejet (optionnel)',
+  nin_face_match: 'Visage détecté · 92%',
+  nin_low_risk: 'Faible risque',
+  nin_med_risk: '⚡ Risque moyen',
+  nin_high_risk: '⚠️ Risque élevé',
+  /* Finance */
+  payout_requests: 'Demandes de paiement artisans',
+  coin_transactions: 'Transactions Maawa Coins',
+  coin_rate: 'Taux : 1 MC = 50 DZD',
+  /* Dispute */
+  dispute_mediator_decision: 'Décision du médiateur',
+  dispute_full_client: 'Remboursement total → Client',
+  dispute_full_artisan: 'Paiement total → Artisan',
+  dispute_split: 'Partage 50/50',
+  dispute_custom: 'Montant personnalisé',
+  dispute_legal: 'Escalader au légal',
+  dispute_custom_amount: 'Montant artisan (DZD)',
+  dispute_note: 'Note de médiation (interne)',
+  dispute_note_ph: "Expliquer la décision pour l'historique…",
+  /* Moderation tabs */
+  mod_all: 'Tous (12)',
+  mod_posts: 'Posts (7)',
+  mod_reels: 'Reels (3)',
+  mod_profiles: 'Profils (2)',
+  /* Broadcast */
+  broadcast_type: 'Type de message',
+  broadcast_target: 'Cible',
+  broadcast_title_lbl: 'Titre de la notification',
+  broadcast_title_ph: 'Ex: 🎉 Nouvelle fonctionnalité Maawa !',
+  broadcast_msg: 'Message',
+  broadcast_schedule: 'Programmation',
+  broadcast_link: 'Lien action',
+  broadcast_push: '📱 Push',
+  broadcast_sms: '💬 SMS',
+  broadcast_banner: '🏷️ Bannière',
+  broadcast_send_now: 'Envoyer maintenant',
+  broadcast_schedule_opt: 'Programmer',
+  broadcast_history: '📊 Historique diffusions',
+  broadcast_all_users: 'Tous les utilisateurs (47 218)',
+  broadcast_artisans: 'Artisans vérifiés (3 841)',
+  broadcast_active_clients: 'Clients actifs (30j)',
+  broadcast_alger: 'Utilisateurs Alger',
+  broadcast_active_missions: 'Artisans avec missions en cours',
+  broadcast_coins: 'Utilisateurs avec solde MC > 0',
+  /* Settings */
+  settings_commission: '💰 Taux de commission',
+  settings_comm_std: 'Commission standard (% du montant mission)',
+  settings_comm_prem: 'Commission artisans Premium',
+  settings_coin_rate: 'Taux Maawa Coin',
+  settings_dzd_per_mc: 'DZD par MC',
+  settings_features: '🔧 Fonctionnalités',
+  settings_safepay: 'Maawa SafePay actif',
+  settings_tender: "Maawa Tender (appels d'offres)",
+  settings_reels: 'Reels et stories',
+  settings_coins: 'Maawa Coins activés',
+  settings_maintenance: 'Mode maintenance',
+  settings_registrations: 'Inscriptions ouvertes',
+  settings_nin_required: 'Vérification NIN obligatoire',
+  settings_ai_fraud: 'Détection fraude IA active',
+  settings_api: '🔑 API & Intégrations',
+  settings_security: '🛡️ Sécurité',
+  settings_fraud_max: 'Score fraude max. auto-approbation NIN',
+  settings_sla: 'Délai SLA vérification NIN (heures)',
+  settings_danger_zone: 'Zone dangereuse',
+  settings_reset_confirm: '⚠️ Action irréversible — Confirmation requise',
+  settings_reset_test: 'Reset Test',
+  settings_reset_label: 'Réinitialiser la base de test',
+  /* Audit */
+  audit_search_ph: 'Rechercher action, admin…',
+  audit_filter: 'Toutes les actions',
+  /* User modal */
+  user_modal_note: 'Note interne',
+  user_modal_note_ph: 'Note visible seulement par les admins…',
+  user_joined: 'Inscrit le',
+  user_last_login: 'Dernière connexion',
+  /* Donut */
+  donut_in_progress: 'En cours',
+  donut_done: 'Terminées',
+  donut_dispatch: 'En dispatch',
+  donut_disputes: 'Litiges',
+  /* Analytics */
+  analytics_new_users: 'Nouveaux utilisateurs (semaine)',
+  analytics_retention: 'Taux de rétention (30j)',
+  analytics_session: 'Temps moyen/session',
+  analytics_conversion: 'Taux de conversion visite→mission',
+  analytics_growth: 'Croissance Utilisateurs (12 mois)',
+  analytics_revenue: 'Revenus Maawa (12 mois)',
+  analytics_by_trade: 'Répartition par métier',
+  analytics_funnel: 'Entonnoir de conversion',
+  /* Funnel */
+  funnel_visits: 'Visites',
+  funnel_signups: 'Inscriptions',
+  funnel_quotes: 'Devis demandés',
+  funnel_missions: 'Missions lancées',
+  funnel_validated: 'Missions validées',
+  /* Map */
+  map_label: 'Algérie · 48 Wilayas',
+  map_high: 'Haute activité',
+  map_normal: 'Activité normale',
+  /* Notif panel */
+  notif_title: 'Notifications',
+  /* User role */
+  sb_role: 'Super Admin',
+  /* Page not found */
+  dm_dark: '🌙',
+  dm_light: '☀️',
+},
+ar: {
+  app_title: 'Maawa مشرف',
+  app_badge: 'تجريبي',
+  nav_principal: 'الرئيسية',
+  nav_users_sct: 'المستخدمون',
+  nav_ops: 'العمليات',
+  nav_content: 'المحتوى',
+  nav_system: 'النظام',
+  nav_dashboard: 'لوحة التحكم',
+  nav_analytics: 'التحليلات',
+  nav_users: 'المستخدمون',
+  nav_verification: 'التحقق من NIN',
+  nav_missions: 'المهام',
+  nav_finance: 'المالية والدفع',
+  nav_disputes: 'النزاعات',
+  nav_moderation: 'الإشراف',
+  nav_broadcast: 'الإشعارات',
+  nav_settings: 'الإعدادات',
+  nav_audit: 'سجل التدقيق',
+  search_ph: 'ابحث عن مستخدم، مهمة، #معرف…',
+  pt_dashboard: 'نظرة عامة 📊',
+  pt_dashboard_sub: 'مارس 2026 · تحديث منذ دقيقتين',
+  pt_analytics: 'التحليلات 📈',
+  pt_analytics_sub: 'مقاييس النمو والأداء',
+  pt_users: 'إدارة المستخدمين 👥',
+  pt_users_sub: '47,218 مستخدم · 3,841 حرفي موثّق',
+  pt_verification: 'التحقق من الهوية NIN 🪪',
+  pt_verification_sub: '7 ملفات في الانتظار · SLA 24 ساعة',
+  pt_missions: 'مركز تحكم المهام 📋',
+  pt_missions_sub: '15,472 مهمة إجمالية · 847 نشطة',
+  pt_finance: 'المالية والدفع الآمن 💰',
+  pt_finance_sub: 'إدارة المدفوعات والضمان وعملات Maawa',
+  pt_disputes: 'حل النزاعات ⚖️',
+  pt_disputes_sub: '3 نزاعات نشطة · 2 في الوساطة · 1 مُصعَّد',
+  pt_moderation: 'إشراف المحتوى 🛡️',
+  pt_moderation_sub: '12 عنصراً مُبلَّغاً عنه · 3 تحتاج تدخلاً عاجلاً',
+  pt_broadcast: 'الإشعارات والرسائل 📣',
+  pt_broadcast_sub: 'تواصل مع مستخدميك عبر Push أو SMS أو البانر',
+  pt_settings: 'إعدادات المنصة ⚙️',
+  pt_settings_sub: 'الإعدادات العامة لـ Maawa · المشرف الأعلى فقط',
+  pt_audit: 'سجل التدقيق 📄',
+  pt_audit_sub: 'جميع إجراءات المشرفين مسجّلة',
+  btn_export: 'تصدير',
+  btn_export_pdf: 'تصدير PDF',
+  btn_save: 'حفظ التغييرات',
+  btn_send: 'إرسال',
+  btn_approve: '✓ موافقة',
+  btn_reject: 'رفض',
+  btn_ban: 'حظر الحساب',
+  btn_suspend: 'تعليق 24 ساعة',
+  btn_contact: 'تواصل',
+  btn_close: 'إغلاق',
+  btn_cancel: 'إلغاء',
+  btn_see: 'عرض',
+  btn_details: 'التفاصيل',
+  btn_assign: 'تعيين',
+  btn_force_done: 'إنهاء إجباري',
+  btn_release: 'إطلاق الدفع',
+  btn_preview: 'معاينة',
+  btn_apply: 'تطبيق القرار',
+  btn_force_release: 'إنهاء وإطلاق الدفع',
+  btn_cancel_refund: 'إلغاء واسترداد',
+  btn_open_dispute: 'فتح نزاع',
+  btn_read_all: 'قراءة الكل',
+  btn_test_connections: 'اختبار الاتصالات',
+  btn_manual_verify: 'تحقق يدوي',
+  btn_ignore: 'تجاهل',
+  btn_warn: 'إنذار',
+  btn_delete: 'حذف',
+  btn_reactivate: 'إعادة تفعيل',
+  btn_receipt: 'إيصال',
+  btn_delay: 'تأجيل',
+  kpi_revenue: 'الإيرادات (دج)',
+  kpi_missions: 'المهام المنجزة هذا الشهر',
+  kpi_users: 'المستخدمون النشطون',
+  kpi_coins: 'عملات Maawa المتداولة',
+  kpi_artisans: 'الحرفيون الموثّقون',
+  kpi_satisfaction: 'معدل الرضا',
+  kpi_disputes: 'النزاعات المفتوحة',
+  kpi_nin_pending: 'NIN في الانتظار',
+  kpi_flagged: 'محتويات مُبلَّغ عنها',
+  kpi_escrow: 'دج في الضمان SafePay',
+  kpi_active_miss: 'المهام النشطة',
+  kpi_done_today: 'المنجزة اليوم',
+  kpi_litige: 'في نزاع',
+  kpi_dispatch: 'في الإسناد (غير مُعيَّنة)',
+  kpi_escrow_active: 'دج في الضمان النشط',
+  kpi_coins_circ: 'العملات المتداولة',
+  kpi_commissions: 'دج عمولات هذا الشهر',
+  kpi_payout_pending: 'طلبات دفع في الانتظار',
+  alert_disputes: '3 نزاعات نشطة تستوجب تدخلاً فورياً',
+  alert_nin: '7 تحقق من NIN في الانتظار منذ أكثر من 24 ساعة (SLA متجاوز)',
+  section_alerts: 'التنبيهات النشطة',
+  revenue_chart_title: 'الإيرادات اليومية (دج)',
+  this_week: 'هذا الأسبوع',
+  last_week: 'الأسبوع الماضي',
+  missions_status: 'حالة المهام',
+  top_wilayas: '🗺️ أفضل الولايات — النشاط',
+  see_all: 'عرض الكل →',
+  activity_live: '⚡ النشاط الفوري',
+  top_artisans: '⭐ أفضل الحرفيين — هذا الشهر',
+  th_user: 'المستخدم',
+  th_type: 'النوع',
+  th_wilaya: 'الولاية',
+  th_joined: 'تاريخ التسجيل',
+  th_missions: 'المهام',
+  th_nin_status: 'حالة NIN',
+  th_account_status: 'حالة الحساب',
+  th_actions: 'الإجراءات',
+  th_mission: '#المهمة',
+  th_client: 'العميل',
+  th_artisan: 'الحرفي',
+  th_trade: 'المهنة',
+  th_amount: 'المبلغ',
+  th_commission: 'العمولة',
+  th_status: 'الحالة',
+  th_safepay: 'SafePay',
+  th_reason: 'السبب',
+  th_ai_score: 'درجة الذكاء الاصطناعي',
+  th_date: 'التاريخ',
+  th_admin: 'المشرف',
+  th_action: 'الإجراء',
+  th_target: 'الهدف',
+  th_details: 'التفاصيل',
+  th_ip: 'عنوان IP',
+  th_artisan_col: 'الحرفي',
+  th_method: 'الطريقة',
+  th_operation: 'العملية',
+  th_hour: 'الوقت',
+  th_dzd: 'دج',
+  th_reporter: 'المُبلِّغ',
+  badge_active: '● نشط',
+  badge_suspended: '⊘ موقوف',
+  badge_banned: '⊗ محظور',
+  badge_verified: '✓ موثّق',
+  badge_pending: '⚠️ في الانتظار',
+  badge_in_progress: '🔧 في الموقع',
+  badge_done: '✅ منجزة',
+  badge_dispute: '⚠️ نزاع',
+  badge_escrow: '⏳ ضمان',
+  badge_blocked: '🔒 محظور',
+  badge_dispatch: '⏳ في الإسناد',
+  badge_live: 'مباشر',
+  badge_urgence: 'عاجل',
+  badge_mediation: 'وساطة',
+  badge_high_risk: 'خطر مرتفع',
+  badge_treated: '✓ تمت المعالجة',
+  filter_all_wilayas: 'كل الولايات',
+  filter_all_status: 'كل الحالات',
+  filter_sort: 'ترتيب: تاريخ التسجيل',
+  filter_all_users: 'الكل (47,218)',
+  filter_artisans: 'الحرفيون (3,841)',
+  filter_clients: 'العملاء (43,377)',
+  filter_suspended: 'الموقوفون (142)',
+  filter_all_missions: 'كل الحالات',
+  filter_all_trades: 'كل المهن',
+  nin_queue: 'قائمة الانتظار',
+  nin_stats_today: 'إحصائيات اليوم',
+  nin_approved: 'موافق عليها',
+  nin_rejected: 'مرفوضة',
+  nin_pending: 'في الانتظار',
+  nin_avg_time: 'متوسط وقت المعالجة',
+  nin_approval_rate: 'معدل الموافقة (7 أيام)',
+  nin_fraud_score: 'درجة الاحتيال AI',
+  nin_docs: 'الوثائق المرفقة',
+  nin_reject_reason: 'سبب الرفض (اختياري)',
+  nin_face_match: 'الوجه مكتشف · 92%',
+  nin_low_risk: 'خطر منخفض',
+  nin_med_risk: '⚡ خطر متوسط',
+  nin_high_risk: '⚠️ خطر مرتفع',
+  payout_requests: 'طلبات دفع الحرفيين',
+  coin_transactions: 'معاملات Maawa Coins',
+  coin_rate: 'السعر: 1 MC = 50 دج',
+  dispute_mediator_decision: 'قرار الوسيط',
+  dispute_full_client: 'استرداد كامل ← العميل',
+  dispute_full_artisan: 'دفع كامل → الحرفي',
+  dispute_split: 'تقسيم 50/50',
+  dispute_custom: 'مبلغ مخصص',
+  dispute_legal: 'إحالة للجهات القانونية',
+  dispute_custom_amount: 'مبلغ الحرفي (دج)',
+  dispute_note: 'ملاحظة الوساطة (داخلية)',
+  dispute_note_ph: 'شرح القرار للسجل…',
+  mod_all: 'الكل (12)',
+  mod_posts: 'المنشورات (7)',
+  mod_reels: 'الريلز (3)',
+  mod_profiles: 'الملفات الشخصية (2)',
+  broadcast_type: 'نوع الرسالة',
+  broadcast_target: 'الفئة المستهدفة',
+  broadcast_title_lbl: 'عنوان الإشعار',
+  broadcast_title_ph: 'مثال: 🎉 ميزة جديدة في Maawa!',
+  broadcast_msg: 'الرسالة',
+  broadcast_schedule: 'الجدولة',
+  broadcast_link: 'رابط الإجراء',
+  broadcast_push: '📱 Push',
+  broadcast_sms: '💬 SMS',
+  broadcast_banner: '🏷️ بانر',
+  broadcast_send_now: 'إرسال الآن',
+  broadcast_schedule_opt: 'جدولة',
+  broadcast_history: '📊 سجل الإرسال',
+  broadcast_all_users: 'جميع المستخدمين (47,218)',
+  broadcast_artisans: 'الحرفيون الموثّقون (3,841)',
+  broadcast_active_clients: 'العملاء النشطون (30 يوماً)',
+  broadcast_alger: 'مستخدمو الجزائر',
+  broadcast_active_missions: 'الحرفيون بمهام نشطة',
+  broadcast_coins: 'مستخدمون برصيد MC > 0',
+  settings_commission: '💰 معدلات العمولة',
+  settings_comm_std: 'العمولة القياسية (% من قيمة المهمة)',
+  settings_comm_prem: 'عمولة الحرفيين المميزين',
+  settings_coin_rate: 'سعر Maawa Coin',
+  settings_dzd_per_mc: 'دج لكل MC',
+  settings_features: '🔧 الميزات',
+  settings_safepay: 'Maawa SafePay نشط',
+  settings_tender: 'Maawa Tender (طلبات العروض)',
+  settings_reels: 'الريلز والقصص',
+  settings_coins: 'Maawa Coins مفعّلة',
+  settings_maintenance: 'وضع الصيانة',
+  settings_registrations: 'التسجيل مفتوح',
+  settings_nin_required: 'التحقق من NIN إلزامي',
+  settings_ai_fraud: 'كشف الاحتيال بالذكاء الاصطناعي',
+  settings_api: '🔑 API والتكاملات',
+  settings_security: '🛡️ الأمان',
+  settings_fraud_max: 'أقصى درجة احتيال للموافقة التلقائية على NIN',
+  settings_sla: 'مهلة SLA للتحقق من NIN (بالساعات)',
+  settings_danger_zone: 'منطقة الخطر',
+  settings_reset_confirm: '⚠️ إجراء لا رجعة فيه — مطلوب تأكيد',
+  settings_reset_test: 'إعادة تعيين اختباري',
+  settings_reset_label: 'إعادة تعيين قاعدة بيانات الاختبار',
+  audit_search_ph: 'ابحث عن إجراء، مشرف…',
+  audit_filter: 'كل الإجراءات',
+  user_modal_note: 'ملاحظة داخلية',
+  user_modal_note_ph: 'ملاحظة مرئية للمشرفين فقط…',
+  user_joined: 'تاريخ التسجيل',
+  user_last_login: 'آخر تسجيل دخول',
+  donut_in_progress: 'جارية',
+  donut_done: 'منجزة',
+  donut_dispatch: 'في الإسناد',
+  donut_disputes: 'نزاعات',
+  analytics_new_users: 'مستخدمون جدد (الأسبوع)',
+  analytics_retention: 'معدل الاحتفاظ (30 يوماً)',
+  analytics_session: 'متوسط مدة الجلسة',
+  analytics_conversion: 'معدل التحويل زيارة→مهمة',
+  analytics_growth: 'نمو المستخدمين (12 شهراً)',
+  analytics_revenue: 'إيرادات Maawa (12 شهراً)',
+  analytics_by_trade: 'التوزيع حسب المهنة',
+  analytics_funnel: 'قمع التحويل',
+  funnel_visits: 'الزيارات',
+  funnel_signups: 'التسجيلات',
+  funnel_quotes: 'طلبات التسعير',
+  funnel_missions: 'المهام المُطلَقة',
+  funnel_validated: 'المهام المُصادَق عليها',
+  map_label: 'الجزائر · 48 ولاية',
+  map_high: 'نشاط مرتفع',
+  map_normal: 'نشاط عادي',
+  notif_title: 'الإشعارات',
+  sb_role: 'المشرف الأعلى',
+  dm_dark: '🌙',
+  dm_light: '☀️',
+},
+en: {
+  app_title: 'Maawa Admin',
+  app_badge: 'BETA',
+  nav_principal: 'Main',
+  nav_users_sct: 'Users',
+  nav_ops: 'Operations',
+  nav_content: 'Content',
+  nav_system: 'System',
+  nav_dashboard: 'Dashboard',
+  nav_analytics: 'Analytics',
+  nav_users: 'Users',
+  nav_verification: 'NIN Verification',
+  nav_missions: 'Missions',
+  nav_finance: 'Finance & SafePay',
+  nav_disputes: 'Disputes',
+  nav_moderation: 'Moderation',
+  nav_broadcast: 'Broadcasts',
+  nav_settings: 'Settings',
+  nav_audit: 'Audit Log',
+  search_ph: 'Search user, mission, #ID…',
+  pt_dashboard: 'Overview 📊',
+  pt_dashboard_sub: 'March 2026 · Updated 2 min ago',
+  pt_analytics: 'Analytics 📈',
+  pt_analytics_sub: 'Growth metrics and performance',
+  pt_users: 'User Management 👥',
+  pt_users_sub: '47,218 users · 3,841 verified artisans',
+  pt_verification: 'NIN Verification 🪪',
+  pt_verification_sub: '7 files pending · 24h SLA',
+  pt_missions: 'Mission Control 📋',
+  pt_missions_sub: '15,472 total missions · 847 active',
+  pt_finance: 'Finance & SafePay 💰',
+  pt_finance_sub: 'Manage payments, escrow and Maawa Coins',
+  pt_disputes: 'Dispute Resolution ⚖️',
+  pt_disputes_sub: '3 active disputes · 2 in mediation · 1 escalated',
+  pt_moderation: 'Content Moderation 🛡️',
+  pt_moderation_sub: '12 items reported · 3 require urgent action',
+  pt_broadcast: 'Broadcasts & Notifications 📣',
+  pt_broadcast_sub: 'Reach your users via push, SMS or banner',
+  pt_settings: 'Platform Settings ⚙️',
+  pt_settings_sub: 'Global Maawa configuration · Super Admin only',
+  pt_audit: 'Audit Log 📄',
+  pt_audit_sub: 'All administrative actions recorded',
+  btn_export: 'Export',
+  btn_export_pdf: 'Export PDF',
+  btn_save: 'Save',
+  btn_send: 'Send',
+  btn_approve: 'Approve ✓',
+  btn_reject: 'Reject',
+  btn_ban: 'Ban',
+  btn_suspend: 'Suspend 24h',
+  btn_contact: 'Contact',
+  btn_close: 'Close',
+  btn_cancel: 'Cancel',
+  btn_see: 'View',
+  btn_details: 'Details',
+  btn_assign: 'Assign',
+  btn_force_done: 'Force done',
+  btn_release: 'Release',
+  btn_preview: 'Preview',
+  btn_apply: 'Apply decision',
+  btn_force_release: 'Force done & Release',
+  btn_cancel_refund: 'Cancel & Refund',
+  btn_open_dispute: 'Open dispute',
+  btn_read_all: 'Mark all read',
+  btn_test_connections: 'Test connections',
+  btn_manual_verify: 'Manual verify',
+  btn_ignore: 'Ignore',
+  btn_warn: 'Warn',
+  btn_delete: 'Delete',
+  btn_reactivate: 'Reactivate',
+  btn_receipt: 'Receipt',
+  btn_delay: 'Delay',
+  kpi_revenue: 'Revenue (DZD)',
+  kpi_missions: 'Missions completed this month',
+  kpi_users: 'Active users',
+  kpi_coins: 'Maawa Coins in circulation',
+  kpi_artisans: 'Verified artisans',
+  kpi_satisfaction: 'Satisfaction rate',
+  kpi_disputes: 'Open disputes',
+  kpi_nin_pending: 'NIN pending',
+  kpi_flagged: 'Flagged contents',
+  kpi_escrow: 'DZD SafePay escrow',
+  kpi_active_miss: 'Active missions',
+  kpi_done_today: 'Completed today',
+  kpi_litige: 'In dispute',
+  kpi_dispatch: 'In dispatch (unassigned)',
+  kpi_escrow_active: 'DZD in active escrow',
+  kpi_coins_circ: 'Coins in circulation',
+  kpi_commissions: 'DZD commissions this month',
+  kpi_payout_pending: 'Payout requests pending',
+  alert_disputes: '3 active disputes require immediate attention',
+  alert_nin: '7 NIN verifications pending for more than 24h (SLA exceeded)',
+  section_alerts: 'Active alerts',
+  revenue_chart_title: 'Daily Revenue (DZD)',
+  this_week: 'This week',
+  last_week: 'Last week',
+  missions_status: 'Mission Status',
+  top_wilayas: '🗺️ Top Wilayas — Activity',
+  see_all: 'See all →',
+  activity_live: '⚡ Live activity',
+  top_artisans: '⭐ Top Artisans — This month',
+  th_user: 'User',
+  th_type: 'Type',
+  th_wilaya: 'Wilaya',
+  th_joined: 'Joined',
+  th_missions: 'Missions',
+  th_nin_status: 'NIN Status',
+  th_account_status: 'Account status',
+  th_actions: 'Actions',
+  th_mission: '#Mission',
+  th_client: 'Client',
+  th_artisan: 'Artisan',
+  th_trade: 'Trade',
+  th_amount: 'Amount',
+  th_commission: 'Commission',
+  th_status: 'Status',
+  th_safepay: 'SafePay',
+  th_reason: 'Reason',
+  th_ai_score: 'AI Score',
+  th_date: 'Date',
+  th_admin: 'Admin',
+  th_action: 'Action',
+  th_target: 'Target',
+  th_details: 'Details',
+  th_ip: 'IP',
+  th_artisan_col: 'Artisan',
+  th_method: 'Method',
+  th_operation: 'Operation',
+  th_hour: 'Time',
+  th_dzd: 'DZD',
+  th_reporter: 'Reported by',
+  badge_active: '● Active',
+  badge_suspended: '⊘ Suspended',
+  badge_banned: '⊗ Banned',
+  badge_verified: '✓ Verified',
+  badge_pending: '⚠️ Pending',
+  badge_in_progress: '🔧 On site',
+  badge_done: '✅ Completed',
+  badge_dispute: '⚠️ Dispute',
+  badge_escrow: '⏳ Escrow',
+  badge_blocked: '🔒 Blocked',
+  badge_dispatch: '⏳ In dispatch',
+  badge_live: 'Live',
+  badge_urgence: 'Urgent',
+  badge_mediation: 'Mediation',
+  badge_high_risk: 'High risk',
+  badge_treated: '✓ Processed',
+  filter_all_wilayas: 'All wilayas',
+  filter_all_status: 'All statuses',
+  filter_sort: 'Sort by: Join date',
+  filter_all_users: 'All (47,218)',
+  filter_artisans: 'Artisans (3,841)',
+  filter_clients: 'Clients (43,377)',
+  filter_suspended: 'Suspended (142)',
+  filter_all_missions: 'All statuses',
+  filter_all_trades: 'All trades',
+  nin_queue: 'Queue',
+  nin_stats_today: "Today's stats",
+  nin_approved: 'Approved',
+  nin_rejected: 'Rejected',
+  nin_pending: 'Pending',
+  nin_avg_time: 'Avg. processing time',
+  nin_approval_rate: 'Approval rate (7d)',
+  nin_fraud_score: 'AI Fraud Score',
+  nin_docs: 'Documents',
+  nin_reject_reason: 'Rejection reason (optional)',
+  nin_face_match: 'Face detected · 92%',
+  nin_low_risk: 'Low risk',
+  nin_med_risk: '⚡ Medium risk',
+  nin_high_risk: '⚠️ High risk',
+  payout_requests: 'Artisan payout requests',
+  coin_transactions: 'Maawa Coin Transactions',
+  coin_rate: 'Rate: 1 MC = 50 DZD',
+  dispute_mediator_decision: 'Mediator decision',
+  dispute_full_client: 'Full refund → Client',
+  dispute_full_artisan: 'Full payment → Artisan',
+  dispute_split: 'Split 50/50',
+  dispute_custom: 'Custom amount',
+  dispute_legal: 'Escalate to legal',
+  dispute_custom_amount: 'Artisan amount (DZD)',
+  dispute_note: 'Mediation note (internal)',
+  dispute_note_ph: 'Explain the decision for the record…',
+  mod_all: 'All (12)',
+  mod_posts: 'Posts (7)',
+  mod_reels: 'Reels (3)',
+  mod_profiles: 'Profiles (2)',
+  broadcast_type: 'Message type',
+  broadcast_target: 'Target',
+  broadcast_title_lbl: 'Notification title',
+  broadcast_title_ph: 'e.g. 🎉 New Maawa feature!',
+  broadcast_msg: 'Message',
+  broadcast_schedule: 'Schedule',
+  broadcast_link: 'Action link',
+  broadcast_push: '📱 Push',
+  broadcast_sms: '💬 SMS',
+  broadcast_banner: '🏷️ Banner',
+  broadcast_send_now: 'Send now',
+  broadcast_schedule_opt: 'Schedule',
+  broadcast_history: '📊 Broadcast history',
+  broadcast_all_users: 'All users (47,218)',
+  broadcast_artisans: 'Verified artisans (3,841)',
+  broadcast_active_clients: 'Active clients (30d)',
+  broadcast_alger: 'Algiers users',
+  broadcast_active_missions: 'Artisans with active missions',
+  broadcast_coins: 'Users with MC balance > 0',
+  settings_commission: '💰 Commission Rates',
+  settings_comm_std: 'Standard commission (% of mission amount)',
+  settings_comm_prem: 'Premium artisans commission',
+  settings_coin_rate: 'Maawa Coin rate',
+  settings_dzd_per_mc: 'DZD per MC',
+  settings_features: '🔧 Features',
+  settings_safepay: 'Maawa SafePay active',
+  settings_tender: 'Maawa Tender (RFQ)',
+  settings_reels: 'Reels and stories',
+  settings_coins: 'Maawa Coins enabled',
+  settings_maintenance: 'Maintenance mode',
+  settings_registrations: 'Registrations open',
+  settings_nin_required: 'NIN verification required',
+  settings_ai_fraud: 'AI fraud detection active',
+  settings_api: '🔑 API & Integrations',
+  settings_security: '🛡️ Security',
+  settings_fraud_max: 'Max fraud score for NIN auto-approval',
+  settings_sla: 'NIN verification SLA (hours)',
+  settings_danger_zone: 'Danger zone',
+  settings_reset_confirm: '⚠️ Irreversible action — Confirmation required',
+  settings_reset_test: 'Reset Test',
+  settings_reset_label: 'Reset test database',
+  audit_search_ph: 'Search action, admin…',
+  audit_filter: 'All actions',
+  user_modal_note: 'Internal note',
+  user_modal_note_ph: 'Note visible to admins only…',
+  user_joined: 'Joined',
+  user_last_login: 'Last login',
+  donut_in_progress: 'In progress',
+  donut_done: 'Completed',
+  donut_dispatch: 'In dispatch',
+  donut_disputes: 'Disputes',
+  analytics_new_users: 'New users (week)',
+  analytics_retention: 'Retention rate (30d)',
+  analytics_session: 'Avg. session time',
+  analytics_conversion: 'Visit→mission conversion rate',
+  analytics_growth: 'User Growth (12 months)',
+  analytics_revenue: 'Maawa Revenue (12 months)',
+  analytics_by_trade: 'By trade breakdown',
+  analytics_funnel: 'Conversion funnel',
+  funnel_visits: 'Visits',
+  funnel_signups: 'Sign-ups',
+  funnel_quotes: 'Quotes requested',
+  funnel_missions: 'Missions launched',
+  funnel_validated: 'Missions validated',
+  map_label: 'Algeria · 48 Wilayas',
+  map_high: 'High activity',
+  map_normal: 'Normal activity',
+  notif_title: 'Notifications',
+  sb_role: 'Super Admin',
+  dm_dark: '🌙',
+  dm_light: '☀️',
+}
+};
+
+/* apply language */
+function setLang(l) {
+  currentLang = l;
+  const t = T[l] || T.fr;
+  const isAr = l === 'ar';
+
+  /* direction */
+  document.documentElement.lang = l;
+  document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+  document.body.setAttribute('dir', isAr ? 'rtl' : 'ltr');
+
+  /* pill active state */
+  ['ar','fr','en'].forEach(x => {
+    const btn = document.getElementById('lp-' + x);
+    if (btn) btn.classList.toggle('on', x === l);
+  });
+
+  /* element map: id → key */
+  const map = {
+    'sb-logo-txt-span': 'app_title', 'sb-logo-badge': 'app_badge',
+    'nav-sct-main': 'nav_principal', 'nav-sct-users': 'nav_users_sct',
+    'nav-sct-ops': 'nav_ops', 'nav-sct-content': 'nav_content', 'nav-sct-system': 'nav_system',
+    'nav-dashboard': 'nav_dashboard', 'nav-analytics': 'nav_analytics', 'nav-users': 'nav_users',
+    'nav-verification': 'nav_verification', 'nav-missions': 'nav_missions', 'nav-finance': 'nav_finance',
+    'nav-disputes': 'nav_disputes', 'nav-moderation': 'nav_moderation', 'nav-broadcast': 'nav_broadcast',
+    'nav-settings': 'nav_settings', 'nav-audit': 'nav_audit',
+    'global-search': null, /* placeholder */
+    'pt-dashboard': 'pt_dashboard', 'pt-dashboard-sub': 'pt_dashboard_sub',
+    'pt-analytics': 'pt_analytics', 'pt-analytics-sub': 'pt_analytics_sub',
+    'pt-users': 'pt_users', 'pt-users-sub': 'pt_users_sub',
+    'pt-verification': 'pt_verification', 'pt-verification-sub': 'pt_verification_sub',
+    'pt-missions': 'pt_missions', 'pt-missions-sub': 'pt_missions_sub',
+    'pt-finance': 'pt_finance', 'pt-finance-sub': 'pt_finance_sub',
+    'pt-disputes': 'pt_disputes', 'pt-disputes-sub': 'pt_disputes_sub',
+    'pt-moderation': 'pt_moderation', 'pt-moderation-sub': 'pt_moderation_sub',
+    'pt-broadcast': 'pt_broadcast', 'pt-broadcast-sub': 'pt_broadcast_sub',
+    'pt-settings': 'pt_settings', 'pt-settings-sub': 'pt_settings_sub',
+    'pt-audit': 'pt_audit', 'pt-audit-sub': 'pt_audit_sub',
+    'notif-title-txt': 'notif_title',
+    'sb-user-role': 'sb_role',
+  };
+
+  Object.entries(map).forEach(([id, key]) => {
+    if (!key) return;
+    const el = document.getElementById(id);
+    if (el && t[key] !== undefined) el.textContent = t[key];
+  });
+
+  /* search placeholder */
+  const si = document.getElementById('global-search');
+  if (si) si.placeholder = t.search_ph;
+
+  /* All placeholder elements */
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    if (t[key]) el.placeholder = t[key];
+  });
+
+  /* <select> options with data-i18n */
+  document.querySelectorAll('option[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key]) el.textContent = t[key];
+  });
+
+  /* page title in topbar */
+  const pageTitleMap = {
+    dashboard: 'pt_dashboard', analytics: 'pt_analytics', users: 'pt_users',
+    verification: 'pt_verification', missions: 'pt_missions', finance: 'pt_finance',
+    disputes: 'pt_disputes', moderation: 'pt_moderation', broadcast: 'pt_broadcast',
+    settings: 'pt_settings', audit: 'pt_audit'
+  };
+  const activePage = document.querySelector('.page.on')?.id?.replace('page-','') || 'dashboard';
+  const tb = document.getElementById('page-title');
+  if (tb && pageTitleMap[activePage]) tb.textContent = t[pageTitleMap[activePage]];
+
+  /* Re-apply all data-i18n on page switch (in case DOM updated) */
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = t[key];
+      else if (el.tagName === 'OPTION') el.textContent = t[key];
+      else el.innerHTML = t[key];
+    }
+  });
+
+  /* Update all data-i18n elements */
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+
+  if (window._langInitDone) {
+    const langMsg = { fr: '🇫🇷 Français activé', ar: '🇩🇿 تم تفعيل العربية', en: '🇬🇧 English activated' };
+    toast(langMsg[l] || langMsg.fr);
+  }
+  try { localStorage.setItem('mw_admin_lang', l); } catch(e) {}
+}
+
+/* ════════════════════════════════════════
+   MAAWA ADMIN PANEL — JavaScript
+════════════════════════════════════════ */
+let dark = false, sbCollapsed = false;
+
+/* ── NAVIGATION ── */
+function goPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('on');
+
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('on'));
+  if (el) el.classList.add('on');
+  else {
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('on');
+    });
+  }
+
+  const titles = {
+    dashboard: 'Dashboard', analytics: 'Analytics', users: 'Utilisateurs',
+    verification: 'Vérification NIN', missions: 'Missions', finance: 'Finance & SafePay',
+    disputes: 'Litiges', moderation: 'Modération', broadcast: 'Diffusions',
+    settings: 'Paramètres', audit: "Journal d'audit"
+  };
+  const el2 = document.getElementById('page-title');
+  if (el2) el2.textContent = titles[id] || id;
+
+  // Re-apply current language after page switch
+  setLang(currentLang);
+  // Close mobile sidebar
+  if (window.innerWidth <= 768) closeMobileSb();
+  closeNotif();
+}
+
+/* ── SIDEBAR COLLAPSE ── */
+function toggleSb() {
+  sbCollapsed = !sbCollapsed;
+  document.getElementById('sidebar').classList.toggle('collapsed', sbCollapsed);
+}
+
+/* ── MOBILE SIDEBAR ── */
+function toggleMobileSb() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('mob-overlay');
+  sb.classList.toggle('mobile-open');
+  ov.classList.toggle('on', sb.classList.contains('mobile-open'));
+}
+function closeMobileSb() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('mob-overlay').classList.remove('on');
+}
+
+/* ── DARK MODE ── */
+function toggleDark() {
+  dark = !dark;
+  document.body.classList.toggle('dark', dark);
+  document.getElementById('dm-btn').textContent = dark ? '☀️' : '🌙';
+  try { localStorage.setItem('mw_admin_dark', dark ? '1' : '0'); } catch(e) {}
+}
+
+/* ── NOTIFICATIONS ── */
+function toggleNotif() {
+  document.getElementById('notif-panel').classList.toggle('on');
+}
+function closeNotif() {
+  document.getElementById('notif-panel').classList.remove('on');
+}
+document.addEventListener('click', e => {
+  const panel = document.getElementById('notif-panel');
+  if (panel && panel.classList.contains('on') && !panel.closest('div')?.contains(e.target)) {
+    // Allow clicks on the icon-btn to toggle
+  }
+});
+
+/* ── TABS ── */
+function setTab(el, id) {
+  const parent = el.closest('.tabs, .tab-group');
+  if (parent) parent.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  toast('📂 Filtre : ' + el.textContent.trim());
+}
+
+/* ── MODALS ── */
+function openModal(id) {
+  document.getElementById(id).classList.add('on');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('on');
+}
+function openUserModal(code) {
+  const data = {
+    'KP': { name: 'Karim Plombier', email: 'karim.p@gmail.com · #A-1042', av: 'KP', avClass: 'av1' },
+    'FA': { name: 'Fatima Amine', email: 'fatima.amine@hotmail.com · #A-0891', av: 'FA', avClass: 'av3' },
+    'RB': { name: 'Riad Boukhalfa', email: 'riad.b@gmail.com · #A-0721', av: 'RB', avClass: 'av2' },
+    'YO': { name: 'Youssef Omar', email: 'youssef.o@yahoo.com · #C-8812', av: 'YO', avClass: 'av4' },
+    'LH': { name: 'Lina Hamza', email: 'lina.h@gmail.com · #A-1102', av: 'LH', avClass: 'av5' },
+    'MF': { name: 'Mohamed Farhat', email: 'm.farhat@email.com · #A-2144', av: 'MF', avClass: 'av4' },
+    'X':  { name: 'Utilisateur inconnu', email: 'unknown · #C-????', av: '?', avClass: 'av4' },
+  };
+  const d = data[code] || data['X'];
+  document.getElementById('modal-user-title').textContent = 'Profil — ' + d.name;
+  document.getElementById('modal-user-name').textContent = d.name;
+  document.getElementById('modal-user-email').textContent = d.email;
+  const av = document.getElementById('modal-user-av');
+  av.textContent = d.av;
+  av.className = 'avatar ' + d.avClass;
+  av.style.cssText = 'width:56px;height:56px;font-size:.9rem;flex-shrink:0;';
+  openModal('user-modal');
+}
+function openNINModal(name, score, trade) {
+  document.getElementById('nin-modal-title').textContent = 'Vérification NIN — ' + name;
+  document.getElementById('nin-trade').textContent = trade + ' · Algérie';
+  const color = score > 60 ? 'var(--rd)' : score > 30 ? 'var(--or)' : 'var(--gn)';
+  const label = score > 60 ? '⚠️ Risque élevé' : score > 30 ? '⚡ Risque moyen' : '✅ Faible risque';
+  document.getElementById('nin-score-val').textContent = score + ' / 100 ' + label;
+  document.getElementById('nin-score-val').style.color = color;
+  document.getElementById('nin-score-bar').style.width = score + '%';
+  document.getElementById('nin-score-bar').style.background = color;
+  document.getElementById('nin-score-num').textContent = score + '%';
+  document.getElementById('nin-score-num').style.color = color;
+  openModal('nin-modal');
+}
+function openMissionModal() { openModal('mission-modal'); }
+function openDisputeModal(id, status) {
+  document.getElementById('dispute-title').textContent = 'Litige ' + id;
+  openModal('dispute-modal');
+}
+function updateDisputeAmount(val) {
+  const el = document.getElementById('custom-amount');
+  if (el) el.style.display = val === 'custom' ? 'block' : 'none';
+}
+
+/* ── MODAL BACKGROUND CLICK — handled in DOMContentLoaded ── */
+
+/* ── BROADCAST TYPE ── */
+function setBtype(type) {
+  ['push','sms','banner'].forEach(t => {
+    const el = document.getElementById('btype-' + t);
+    if (el) {
+      if (t === type) {
+        el.style.border = '2px solid var(--b500)';
+        el.style.background = 'var(--b50)';
+        el.style.color = 'var(--b500)';
+      } else {
+        el.style.border = '2px solid var(--border2)';
+        el.style.background = 'transparent';
+        el.style.color = 'var(--text2)';
+      }
+    }
+  });
+}
+
+/* ── TOAST ── */
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('on'), 2800);
+}
+
+/* ── CHARTS ── */
+function drawBarChart(containerId, data, color = 'var(--b500)') {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const max = Math.max(...data.map(d => d.val));
+  container.innerHTML = data.map(d => `
+    <div class="bar-wrap">
+      <div class="bar-val">${d.val >= 1000 ? (d.val/1000).toFixed(1)+'k' : d.val}</div>
+      <div class="bar-fill-wrap">
+        <div class="bar-fill" style="height:${Math.round((d.val/max)*100)}%;background:${d.color || color};width:100%"></div>
+      </div>
+      <div class="bar-lbl">${d.label}</div>
+    </div>
+  `).join('');
+}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  // Restore dark mode
+  try { if (localStorage.getItem('mw_admin_dark') === '1') { dark = true; document.body.classList.add('dark'); document.getElementById('dm-btn').textContent = '☀️'; } } catch(e) {}
+
+  // Restore saved language
+  try {
+    const saved = localStorage.getItem('mw_admin_lang') || 'fr';
+    setLang(saved);
+  } catch(e) { setLang('fr'); }
+  window._langInitDone = true;
+
+  // ESC closes modals
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-bg.on').forEach(m => m.classList.remove('on'));
+      closeNotif();
+    }
+  });
+
+  // Draw dashboard charts
+  const days7 = [
+    { label: 'L', val: 218000 }, { label: 'M', val: 195000 }, { label: 'M', val: 271000 },
+    { label: 'J', val: 312000 }, { label: 'V', val: 288000 }, { label: 'S', val: 198000 },
+    { label: 'D', val: 158000 }
+  ];
+  drawBarChart('revenue-chart', days7, 'var(--b500)');
+
+  // Analytics users
+  const months = [
+    {label:'Avr',val:28000},{label:'Mai',val:30500},{label:'Jun',val:32100},{label:'Jul',val:34800},
+    {label:'Aoû',val:33200},{label:'Sep',val:37100},{label:'Oct',val:39400},{label:'Nov',val:41200},
+    {label:'Déc',val:42800},{label:'Jan',val:44100},{label:'Fév',val:45900},{label:'Mar',val:47218}
+  ];
+  drawBarChart('users-chart', months, 'var(--pu)');
+
+  // Analytics revenue
+  const revM = [
+    {label:'Avr',val:3200000},{label:'Mai',val:3600000},{label:'Jun',val:3900000},{label:'Jul',val:4100000},
+    {label:'Aoû',val:3800000},{label:'Sep',val:4400000},{label:'Oct',val:5100000},{label:'Nov',val:5600000},
+    {label:'Déc',val:6200000},
+    {label:'Jan',val:6800000},{label:'Fév',val:7600000},{label:'Mar',val:8470000}
+  ];
+  drawBarChart('rev-chart', revM, 'var(--gn)');
+
+  // NIN approval chart
+  const ninData = [
+    {label:'L',val:18,color:'var(--gn)'},{label:'M',val:14,color:'var(--gn)'},
+    {label:'M',val:15,color:'var(--gn)'},{label:'J',val:11,color:'var(--gn)'},
+    {label:'V',val:9,color:'var(--gn)'},{label:'S',val:6,color:'var(--go)'},
+    {label:'D',val:3,color:'var(--rd)'}
+  ];
+  drawBarChart('nin-chart', ninData, 'var(--gn)');
+
+  // Close notif on outside click
+  document.addEventListener('click', e => {
+    const np = document.getElementById('notif-panel');
+    const nb = document.getElementById('notif-btn');
+    if (np && nb && np.classList.contains('on') && !np.contains(e.target) && !nb.contains(e.target)) {
+      closeNotif();
+    }
+  });
+
+  // Modal backdrop click to close
+  document.querySelectorAll('.modal-bg').forEach(bg => {
+    bg.addEventListener('click', e => { if (e.target === bg) bg.classList.remove('on'); });
+  });
+
+  window.dispatchEvent(new Event('resize'));
+});
+
+/* ══ LOGIN / LOGOUT ══ */
+let adminRole = 'super';
+
+function setAdminRole(el, role) {
+  adminRole = role;
+  document.querySelectorAll('.al-role').forEach(b => b.classList.remove('on'));
+  if (el) el.classList.add('on');
+}
+
+function adminLogin() {
+  const btn = document.getElementById('al-login-btn');
+  const txt = document.getElementById('al-btn-txt');
+  if (btn) { btn.disabled = true; if(txt) txt.innerHTML = '<span class="al-loader"></span>'; }
+  setTimeout(() => {
+    document.getElementById('admin-login').style.display = 'none';
+    const wrap = document.getElementById('admin-wrap');
+    if (wrap) wrap.classList.add('on');
+    const roleNames = { super: 'Super Admin', mod: 'Moderateur', fin: 'Finance' };
+    const avatarInits = { super: 'SA', mod: 'MO', fin: 'FI' };
+    const uname = document.querySelector('.sb-uname');
+    if (uname) uname.textContent = roleNames[adminRole] || 'Admin';
+    const sav = document.querySelector('.sb-avatar');
+    if (sav) sav.textContent = avatarInits[adminRole] || 'SA';
+    goPage('dashboard', null);
+    toast('Connecte ' + (roleNames[adminRole] || 'Admin'));
+    if (btn) btn.disabled = false;
+  }, 900);
+}
+
+function adminLogout() {
+  const wrap = document.getElementById('admin-wrap');
+  if (wrap) wrap.classList.remove('on');
+  const loginDiv = document.getElementById('admin-login');
+  if (loginDiv) loginDiv.style.display = 'flex';
+  toast('Au revoir!');
+}
+
+</script>
+
+</body>
+</html>
